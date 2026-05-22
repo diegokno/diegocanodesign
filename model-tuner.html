@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>3D Tuner</title>
+  <style>
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      height: 100vh;
+      overflow: hidden;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 380px;
+      background: #ebebeb;
+      color: #262626;
+      font: 14px/1.45 "DM Sans", system-ui, sans-serif;
+    }
+    .viewer {
+      position: relative;
+      min-width: 0;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 50% 40%, rgba(255, 255, 255, 0.24), rgba(255, 255, 255, 0.06) 24%, transparent 58%),
+        #ebebeb;
+    }
+    .viewer canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+    .status {
+      position: absolute;
+      left: 24px;
+      bottom: 24px;
+      z-index: 2;
+      padding: 10px 14px;
+      border-radius: 14px;
+      background: rgba(38, 38, 38, 0.82);
+      color: #ebebeb;
+      font-size: 12px;
+      letter-spacing: 0.01em;
+    }
+    .panel {
+      height: 100vh;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding: 20px;
+      background: rgba(255, 255, 255, 0.72);
+      border-left: 1px solid rgba(38, 38, 38, 0.08);
+      backdrop-filter: blur(10px);
+    }
+    h1 {
+      margin: 0 0 10px;
+      font-size: 18px;
+      line-height: 1.1;
+    }
+    p {
+      margin: 0 0 16px;
+      color: rgba(38, 38, 38, 0.72);
+    }
+    .field {
+      margin-bottom: 14px;
+    }
+    .field label {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 6px;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: rgba(38, 38, 38, 0.72);
+    }
+    input, textarea, button {
+      width: 100%;
+    }
+    input[type="range"] {
+      accent-color: #262626;
+    }
+    textarea {
+      min-height: 220px;
+      resize: vertical;
+      padding: 12px;
+      border: 1px solid rgba(38, 38, 38, 0.12);
+      border-radius: 12px;
+      background: #fff;
+      color: #262626;
+    }
+    button {
+      padding: 10px 12px;
+      border: 0;
+      border-radius: 999px;
+      background: #262626;
+      color: #f2f2f2;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .hint {
+      font-size: 12px;
+      color: rgba(38, 38, 38, 0.6);
+    }
+    @media (max-width: 980px) {
+      body {
+        grid-template-columns: 1fr;
+        grid-template-rows: 48vh 52vh;
+      }
+      .panel {
+        height: auto;
+        border-left: 0;
+        border-top: 1px solid rgba(38, 38, 38, 0.08);
+      }
+    }
+  </style>
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.165.0/build/three.module.js"
+      }
+    }
+  </script>
+</head>
+<body>
+  <div class="viewer" id="viewer">
+    <div class="status" id="status">Loading 3D object...</div>
+  </div>
+
+  <aside class="panel">
+    <h1>3D Scene Tuner</h1>
+    <p>Este preview ahora es uno solo. Puedes rotar el objeto arrastrando y los cambios de luz se ven aqui mismo.</p>
+
+    <div class="field"><label><span>Exposure</span><span id="exposure-value">1.52</span></label><input id="exposure" type="range" min="0.3" max="2.5" step="0.01" value="1.52"></div>
+    <div class="field"><label><span>Ambient</span><span id="ambient-value">1.03</span></label><input id="ambient" type="range" min="0" max="3" step="0.01" value="1.03"></div>
+    <div class="field"><label><span>Spot Intensity</span><span id="spot-value">2.60</span></label><input id="spot" type="range" min="0" max="8" step="0.01" value="2.6"></div>
+    <div class="field"><label><span>Spot X</span><span id="spotx-value">0.32</span></label><input id="spotx" type="range" min="-10" max="10" step="0.01" value="0.32"></div>
+    <div class="field"><label><span>Spot Y</span><span id="spoty-value">1.23</span></label><input id="spoty" type="range" min="-10" max="10" step="0.01" value="1.23"></div>
+    <div class="field"><label><span>Spot Z</span><span id="spotz-value">6.04</span></label><input id="spotz" type="range" min="-10" max="10" step="0.01" value="6.04"></div>
+    <div class="field"><label><span>Fill Intensity</span><span id="fill-value">5.00</span></label><input id="fill" type="range" min="0" max="5" step="0.01" value="5"></div>
+    <div class="field"><label><span>Fill X</span><span id="fillx-value">-0.65</span></label><input id="fillx" type="range" min="-10" max="10" step="0.01" value="-0.65"></div>
+    <div class="field"><label><span>Fill Y</span><span id="filly-value">5.13</span></label><input id="filly" type="range" min="-10" max="10" step="0.01" value="5.13"></div>
+    <div class="field"><label><span>Fill Z</span><span id="fillz-value">2.66</span></label><input id="fillz" type="range" min="-10" max="10" step="0.01" value="2.66"></div>
+    <div class="field"><label><span>Field Of View</span><span id="fov-value">18.00</span></label><input id="fov" type="range" min="8" max="30" step="0.1" value="18"></div>
+    <div class="field"><label><span>Camera Z</span><span id="camz-value">16.50</span></label><input id="camz" type="range" min="6" max="30" step="0.1" value="16.5"></div>
+    <div class="field"><label><span>Object X</span><span id="offsetx-value">3.25</span></label><input id="offsetx" type="range" min="-4" max="8" step="0.01" value="3.25"></div>
+    <div class="field"><label><span>Object Y</span><span id="offsety-value">-0.10</span></label><input id="offsety" type="range" min="-4" max="4" step="0.01" value="-0.1"></div>
+    <div class="field"><label><span>Object Scale</span><span id="scale-value">0.92</span></label><input id="scale" type="range" min="0.4" max="1.6" step="0.01" value="0.92"></div>
+
+    <div class="field">
+      <label><span>Instructions For Codex</span></label>
+      <textarea id="output" readonly></textarea>
+    </div>
+
+    <div class="field"><button id="copy">Copy settings</button></div>
+    <p class="hint">Este tuner usa un render real de three.js para que las luces si cambien visualmente aqui mismo. La web principal sigue usando model-viewer, asi que tomalo como una aproximacion util, no una copia matematica perfecta.</p>
+  </aside>
+
+  <script type="module">
+    import * as THREE from "three";
+    import { GLTFLoader } from "https://cdn.jsdelivr.net/npm/three@0.165.0/examples/jsm/loaders/GLTFLoader.js";
+    import { OrbitControls } from "https://cdn.jsdelivr.net/npm/three@0.165.0/examples/jsm/controls/OrbitControls.js";
+
+    const viewer = document.getElementById("viewer");
+    const status = document.getElementById("status");
+    const output = document.getElementById("output");
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.shadowMap.enabled = true;
+    viewer.appendChild(renderer.domElement);
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(18, 1, 0.1, 100);
+    camera.position.set(0, 0, 16.5);
+
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;
+    controls.enablePan = false;
+    controls.target.set(0, 0, 0);
+
+    const ambient = new THREE.AmbientLight(0xffffff, 1.03);
+    scene.add(ambient);
+
+    const spot = new THREE.SpotLight(0xffffff, 2.6, 40, Math.PI / 6, 0.35, 1);
+    spot.position.set(0.32, 1.23, 6.04);
+    scene.add(spot);
+    scene.add(spot.target);
+
+    const fill = new THREE.DirectionalLight(0xffffff, 5);
+    fill.position.set(-0.65, 5.13, 2.66);
+    scene.add(fill);
+
+    const hemi = new THREE.HemisphereLight(0xffffff, 0xdadada, 0.5);
+    scene.add(hemi);
+
+    const spotHelper = new THREE.SpotLightHelper(spot, 0xffffff);
+    scene.add(spotHelper);
+    spotHelper.visible = false;
+
+    const fillHelper = new THREE.DirectionalLightHelper(fill, 0.45, 0x666666);
+    scene.add(fillHelper);
+    fillHelper.visible = false;
+
+    const spotMarker = new THREE.Mesh(
+      new THREE.SphereGeometry(0.08, 16, 16),
+      new THREE.MeshBasicMaterial({ color: 0xffb462 })
+    );
+    scene.add(spotMarker);
+    spotMarker.visible = false;
+
+    const fillMarker = new THREE.Mesh(
+      new THREE.SphereGeometry(0.06, 16, 16),
+      new THREE.MeshBasicMaterial({ color: 0x666666 })
+    );
+    scene.add(fillMarker);
+    fillMarker.visible = false;
+
+    const root = new THREE.Group();
+    scene.add(root);
+
+    let model = null;
+    let baseScale = 1;
+
+    function resize() {
+      const width = viewer.clientWidth;
+      const height = viewer.clientHeight;
+      renderer.setSize(width, height, false);
+      camera.aspect = width / height;
+      camera.updateProjectionMatrix();
+    }
+    window.addEventListener("resize", resize);
+    resize();
+
+    function readValues() {
+      return {
+        exposure: Number(document.getElementById("exposure").value),
+        ambient: Number(document.getElementById("ambient").value),
+        spot: Number(document.getElementById("spot").value),
+        spotX: Number(document.getElementById("spotx").value),
+        spotY: Number(document.getElementById("spoty").value),
+        spotZ: Number(document.getElementById("spotz").value),
+        fill: Number(document.getElementById("fill").value),
+        fillX: Number(document.getElementById("fillx").value),
+        fillY: Number(document.getElementById("filly").value),
+        fillZ: Number(document.getElementById("fillz").value),
+        fov: Number(document.getElementById("fov").value),
+        camZ: Number(document.getElementById("camz").value),
+        offsetX: Number(document.getElementById("offsetx").value),
+        offsetY: Number(document.getElementById("offsety").value),
+        scale: Number(document.getElementById("scale").value),
+      };
+    }
+
+    function updateLabels(values) {
+      document.getElementById("exposure-value").textContent = values.exposure.toFixed(2);
+      document.getElementById("ambient-value").textContent = values.ambient.toFixed(2);
+      document.getElementById("spot-value").textContent = values.spot.toFixed(2);
+      document.getElementById("spotx-value").textContent = values.spotX.toFixed(2);
+      document.getElementById("spoty-value").textContent = values.spotY.toFixed(2);
+      document.getElementById("spotz-value").textContent = values.spotZ.toFixed(2);
+      document.getElementById("fill-value").textContent = values.fill.toFixed(2);
+      document.getElementById("fillx-value").textContent = values.fillX.toFixed(2);
+      document.getElementById("filly-value").textContent = values.fillY.toFixed(2);
+      document.getElementById("fillz-value").textContent = values.fillZ.toFixed(2);
+      document.getElementById("fov-value").textContent = values.fov.toFixed(2);
+      document.getElementById("camz-value").textContent = values.camZ.toFixed(2);
+      document.getElementById("offsetx-value").textContent = values.offsetX.toFixed(2);
+      document.getElementById("offsety-value").textContent = values.offsetY.toFixed(2);
+      document.getElementById("scale-value").textContent = values.scale.toFixed(2);
+    }
+
+    function updateOutput(values) {
+      output.value =
+`Use these 3D settings:
+${JSON.stringify({
+  exposure: values.exposure,
+  ambientIntensity: values.ambient,
+  keyLight: { intensity: values.spot, x: values.spotX, y: values.spotY, z: values.spotZ },
+  fillLight: { intensity: values.fill, x: values.fillX, y: values.fillY, z: values.fillZ },
+  fieldOfView: values.fov,
+  cameraZ: values.camZ,
+  objectOffset: { x: values.offsetX, y: values.offsetY },
+  objectScale: values.scale
+}, null, 2)}`;
+    }
+
+    function applyValues() {
+      const values = readValues();
+      updateLabels(values);
+
+      renderer.toneMappingExposure = values.exposure;
+      ambient.intensity = values.ambient;
+
+      spot.intensity = values.spot;
+      spot.position.set(values.spotX, values.spotY, values.spotZ);
+      fill.intensity = values.fill;
+      fill.position.set(values.fillX, values.fillY, values.fillZ);
+
+      spotMarker.position.copy(spot.position);
+      fillMarker.position.copy(fill.position);
+
+      camera.fov = values.fov;
+      camera.position.z = values.camZ;
+      camera.updateProjectionMatrix();
+
+      if (model) {
+        root.position.set(values.offsetX, values.offsetY, 0);
+        model.scale.setScalar(baseScale * values.scale);
+        spot.target.position.copy(root.position);
+      }
+
+      spotHelper.update();
+      fillHelper.update();
+      controls.update();
+      updateOutput(values);
+    }
+
+    new GLTFLoader().load("./assets/logo_web.glb", (gltf) => {
+      model = gltf.scene;
+      model.traverse((child) => {
+        if (child.isMesh) {
+          child.castShadow = true;
+          child.receiveShadow = true;
+        }
+      });
+      root.add(model);
+
+      const bounds = new THREE.Box3().setFromObject(model);
+      const center = bounds.getCenter(new THREE.Vector3());
+      const size = bounds.getSize(new THREE.Vector3());
+      const maxDimension = Math.max(size.x, size.y, size.z) || 1;
+      baseScale = 6.2 / maxDimension;
+
+      model.position.sub(center);
+      model.rotation.x = Math.PI / 2;
+      model.rotation.z = Math.PI;
+      model.scale.setScalar(baseScale);
+      root.position.set(3.25, -0.1, 0);
+      spot.target.position.copy(root.position);
+      status.textContent = "3D object loaded";
+      applyValues();
+    }, undefined, () => {
+      status.textContent = "Could not load the 3D object";
+    });
+
+    [
+      "exposure", "ambient", "spot", "spotx", "spoty", "spotz",
+      "fill", "fillx", "filly", "fillz", "fov", "camz", "offsetx", "offsety", "scale"
+    ].forEach((id) => {
+      document.getElementById(id).addEventListener("input", applyValues);
+      document.getElementById(id).addEventListener("change", applyValues);
+    });
+
+    document.getElementById("copy").addEventListener("click", async () => {
+      await navigator.clipboard.writeText(output.value);
+    });
+
+    applyValues();
+
+    function render() {
+      controls.update();
+      spotHelper.update();
+      fillHelper.update();
+      renderer.render(scene, camera);
+      requestAnimationFrame(render);
+    }
+    render();
+  </script>
+</body>
+</html>

@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>3D Tuner 2</title>
+  <style>
+    * { box-sizing: border-box; }
+    :root {
+      --bg: #ebebeb;
+      --text: #262626;
+      --muted: #898989;
+    }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      height: 100vh;
+      overflow: hidden;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 400px;
+      background: var(--bg);
+      color: var(--text);
+      font: 14px/1.45 "DM Sans", system-ui, sans-serif;
+    }
+    .viewer {
+      position: relative;
+      min-width: 0;
+      overflow: hidden;
+      background: var(--bg);
+    }
+    .viewer::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 50% 40%, rgba(255, 255, 255, 0.24), rgba(255, 255, 255, 0.06) 24%, transparent 58%),
+        var(--bg);
+      pointer-events: none;
+    }
+    .viewer-shell {
+      position: absolute;
+      inset: 0;
+      overflow: visible;
+    }
+    .model-viewport {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      width: 100vw;
+      height: 112%;
+      overflow: visible;
+      transform: translateX(-50%);
+      padding-right: max(40px, calc((100vw - 1600px) / 2 + 56px));
+    }
+    .model-stage {
+      position: relative;
+      width: 100vw;
+      height: 100svh;
+      margin-top: -2svh;
+      overflow: visible;
+    }
+    .model-stage::after {
+      content: "";
+      position: absolute;
+      inset: 14% 18% 24% 18%;
+      background:
+        radial-gradient(
+          60% 46% at 52% 18%,
+          rgba(255, 255, 255, 0.32),
+          rgba(255, 255, 255, 0.12) 28%,
+          rgba(255, 255, 255, 0.03) 52%,
+          transparent 76%
+        );
+      mix-blend-mode: screen;
+      opacity: 0.74;
+      filter: blur(16px);
+      pointer-events: none;
+    }
+    .hero-model {
+      position: absolute;
+      inset: -34% -34% -38% -34%;
+      width: calc(100% + 68%);
+      height: calc(100% + 72%);
+      background: transparent;
+      --progress-bar-height: 0px;
+      --poster-color: transparent;
+      opacity: 1;
+      pointer-events: auto;
+      will-change: transform;
+      transform: translate3d(18%, 0, 0) scale(0.554);
+      transform-origin: center center;
+    }
+    .hero-model::part(default-progress-bar),
+    .hero-model::part(default-ar-button) {
+      display: none;
+    }
+    .status {
+      position: absolute;
+      left: 24px;
+      bottom: 24px;
+      z-index: 3;
+      padding: 10px 14px;
+      border-radius: 14px;
+      background: rgba(38, 38, 38, 0.82);
+      color: #ebebeb;
+      font-size: 12px;
+      letter-spacing: 0.01em;
+    }
+    .panel {
+      height: 100vh;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding: 20px;
+      background: rgba(255, 255, 255, 0.72);
+      border-left: 1px solid rgba(38, 38, 38, 0.08);
+      backdrop-filter: blur(10px);
+    }
+    h1 {
+      margin: 0 0 10px;
+      font-size: 18px;
+      line-height: 1.1;
+    }
+    p {
+      margin: 0 0 16px;
+      color: rgba(38, 38, 38, 0.72);
+    }
+    .field {
+      margin-bottom: 14px;
+    }
+    .field label {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 6px;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: rgba(38, 38, 38, 0.72);
+    }
+    input, textarea, button, select {
+      width: 100%;
+    }
+    input[type="range"] {
+      accent-color: #262626;
+    }
+    select, textarea {
+      padding: 12px;
+      border: 1px solid rgba(38, 38, 38, 0.12);
+      border-radius: 12px;
+      background: #fff;
+      color: #262626;
+      font: inherit;
+    }
+    textarea {
+      min-height: 220px;
+      resize: vertical;
+    }
+    .buttons {
+      display: flex;
+      gap: 10px;
+    }
+    .buttons button {
+      flex: 1 1 0;
+    }
+    button {
+      padding: 10px 12px;
+      border: 0;
+      border-radius: 999px;
+      background: #262626;
+      color: #f2f2f2;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .secondary {
+      background: rgba(38, 38, 38, 0.08);
+      color: #262626;
+    }
+    .hint {
+      font-size: 12px;
+      color: rgba(38, 38, 38, 0.6);
+    }
+    @media (max-width: 980px) {
+      body {
+        grid-template-columns: 1fr;
+        grid-template-rows: 46vh 54vh;
+      }
+      .panel {
+        height: auto;
+        border-left: 0;
+        border-top: 1px solid rgba(38, 38, 38, 0.08);
+      }
+      .model-viewport {
+        padding-right: 0;
+      }
+      .model-stage {
+        width: 114vw;
+        height: 48svh;
+      }
+    }
+  </style>
+  <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.5.0/model-viewer.min.js"></script>
+</head>
+<body>
+  <div class="viewer">
+    <div class="viewer-shell">
+      <div class="model-viewport" aria-hidden="true">
+        <div class="model-stage">
+          <model-viewer
+            id="hero-model"
+            class="hero-model"
+            src="./assets/logo_web.glb"
+            animation-crossfade-duration="0"
+            interpolation-decay="0"
+            shadow-intensity="0.34"
+            shadow-softness="0.9"
+            exposure="1.52"
+            environment-image="https://modelviewer.dev/shared-assets/environments/aircraft_workshop_01_1k.hdr"
+            environment-intensity="1.8"
+            interaction-prompt="none"
+            touch-action="none"
+            camera-orbit="0deg 0deg auto"
+            orientation="0deg 0deg 180deg"
+            camera-target="0m 0m 0m"
+            field-of-view="18deg"
+            alt="Animated 3D logo"
+          ></model-viewer>
+        </div>
+      </div>
+    </div>
+    <div class="status" id="status">Loading 3D object...</div>
+  </div>
+
+  <aside class="panel">
+    <h1>3D Tuner 2</h1>
+    <p>Este tuner usa el mismo <code>model-viewer</code> de la web principal. Todo lo que ajustes aqui si es trasladable 1:1.</p>
+
+    <div class="field">
+      <label><span>Environment Preset</span><span id="env-label">Workshop</span></label>
+      <select id="environment">
+        <option value="https://modelviewer.dev/shared-assets/environments/aircraft_workshop_01_1k.hdr" selected>Workshop</option>
+        <option value="https://modelviewer.dev/shared-assets/environments/studio_small_09_1k.hdr">Studio Small</option>
+        <option value="https://modelviewer.dev/shared-assets/environments/moon_1k.hdr">Moon</option>
+        <option value="https://modelviewer.dev/shared-assets/environments/spruit_sunrise_1k_HDR.hdr">Spruit Sunrise</option>
+        <option value="https://modelviewer.dev/shared-assets/environments/legacy.hdr">Legacy</option>
+      </select>
+    </div>
+
+    <div class="field"><label><span>Exposure</span><span id="exposure-value">1.52</span></label><input id="exposure" type="range" min="0.3" max="2.5" step="0.01" value="1.52"></div>
+    <div class="field"><label><span>Environment Intensity</span><span id="envint-value">1.80</span></label><input id="envint" type="range" min="0" max="4" step="0.01" value="1.8"></div>
+    <div class="field"><label><span>Shadow Intensity</span><span id="shadow-value">0.34</span></label><input id="shadow" type="range" min="0" max="2" step="0.01" value="0.34"></div>
+    <div class="field"><label><span>Shadow Softness</span><span id="softness-value">0.90</span></label><input id="softness" type="range" min="0" max="2" step="0.01" value="0.9"></div>
+    <div class="field"><label><span>Field Of View</span><span id="fov-value">18.00</span></label><input id="fov" type="range" min="8" max="30" step="0.1" value="18"></div>
+    <div class="field"><label><span>Orbit X</span><span id="orbitx-value">0.00</span></label><input id="orbitx" type="range" min="-40" max="40" step="0.1" value="0"></div>
+    <div class="field"><label><span>Orbit Y</span><span id="orbity-value">0.00</span></label><input id="orbity" type="range" min="-40" max="40" step="0.1" value="0"></div>
+    <div class="field"><label><span>Target X</span><span id="targetx-value">0.00</span></label><input id="targetx" type="range" min="-5" max="5" step="0.01" value="0"></div>
+    <div class="field"><label><span>Target Y</span><span id="targety-value">0.00</span></label><input id="targety" type="range" min="-5" max="5" step="0.01" value="0"></div>
+    <div class="field"><label><span>Target Z</span><span id="targetz-value">0.00</span></label><input id="targetz" type="range" min="-5" max="5" step="0.01" value="0"></div>
+    <div class="field"><label><span>Orientation X</span><span id="rotx-value">0.00</span></label><input id="rotx" type="range" min="-180" max="180" step="0.1" value="0"></div>
+    <div class="field"><label><span>Orientation Y</span><span id="roty-value">0.00</span></label><input id="roty" type="range" min="-180" max="180" step="0.1" value="0"></div>
+    <div class="field"><label><span>Orientation Z</span><span id="rotz-value">180.00</span></label><input id="rotz" type="range" min="-180" max="180" step="0.1" value="180"></div>
+
+    <div class="field">
+      <label><span>Instructions For Codex</span></label>
+      <textarea id="output" readonly></textarea>
+    </div>
+
+    <div class="field buttons">
+      <button id="copy">Copy settings</button>
+      <button id="reset" class="secondary" type="button">Reset</button>
+    </div>
+
+    <p class="hint">Este archivo no simula luces falsas ni helpers de three.js. Solo ajusta propiedades que la web actual si puede usar exactamente.</p>
+  </aside>
+
+  <script type="module">
+    const defaults = {
+      environmentImage: "https://modelviewer.dev/shared-assets/environments/aircraft_workshop_01_1k.hdr",
+      exposure: 1.52,
+      environmentIntensity: 1.8,
+      shadowIntensity: 0.34,
+      shadowSoftness: 0.9,
+      fieldOfView: 18,
+      orbitX: 0,
+      orbitY: 0,
+      targetX: 0,
+      targetY: 0,
+      targetZ: 0,
+      rotX: 0,
+      rotY: 0,
+      rotZ: 180,
+    };
+
+    const model = document.getElementById("hero-model");
+    const status = document.getElementById("status");
+    const output = document.getElementById("output");
+    const environment = document.getElementById("environment");
+
+    function readValues() {
+      return {
+        environmentImage: environment.value,
+        environmentLabel: environment.options[environment.selectedIndex].text,
+        exposure: Number(document.getElementById("exposure").value),
+        environmentIntensity: Number(document.getElementById("envint").value),
+        shadowIntensity: Number(document.getElementById("shadow").value),
+        shadowSoftness: Number(document.getElementById("softness").value),
+        fieldOfView: Number(document.getElementById("fov").value),
+        orbitX: Number(document.getElementById("orbitx").value),
+        orbitY: Number(document.getElementById("orbity").value),
+        targetX: Number(document.getElementById("targetx").value),
+        targetY: Number(document.getElementById("targety").value),
+        targetZ: Number(document.getElementById("targetz").value),
+        rotX: Number(document.getElementById("rotx").value),
+        rotY: Number(document.getElementById("roty").value),
+        rotZ: Number(document.getElementById("rotz").value),
+      };
+    }
+
+    function updateLabels(values) {
+      document.getElementById("env-label").textContent = values.environmentLabel;
+      document.getElementById("exposure-value").textContent = values.exposure.toFixed(2);
+      document.getElementById("envint-value").textContent = values.environmentIntensity.toFixed(2);
+      document.getElementById("shadow-value").textContent = values.shadowIntensity.toFixed(2);
+      document.getElementById("softness-value").textContent = values.shadowSoftness.toFixed(2);
+      document.getElementById("fov-value").textContent = values.fieldOfView.toFixed(2);
+      document.getElementById("orbitx-value").textContent = values.orbitX.toFixed(2);
+      document.getElementById("orbity-value").textContent = values.orbitY.toFixed(2);
+      document.getElementById("targetx-value").textContent = values.targetX.toFixed(2);
+      document.getElementById("targety-value").textContent = values.targetY.toFixed(2);
+      document.getElementById("targetz-value").textContent = values.targetZ.toFixed(2);
+      document.getElementById("rotx-value").textContent = values.rotX.toFixed(2);
+      document.getElementById("roty-value").textContent = values.rotY.toFixed(2);
+      document.getElementById("rotz-value").textContent = values.rotZ.toFixed(2);
+    }
+
+    function updateOutput(values) {
+      output.value =
+`Apply these model-viewer settings:
+${JSON.stringify({
+  environmentImage: values.environmentImage,
+  exposure: values.exposure,
+  environmentIntensity: values.environmentIntensity,
+  shadowIntensity: values.shadowIntensity,
+  shadowSoftness: values.shadowSoftness,
+  fieldOfView: values.fieldOfView,
+  cameraOrbit: {
+    x: values.orbitX,
+    y: values.orbitY
+  },
+  cameraTarget: {
+    x: values.targetX,
+    y: values.targetY,
+    z: values.targetZ
+  },
+  orientation: {
+    x: values.rotX,
+    y: values.rotY,
+    z: values.rotZ
+  }
+}, null, 2)}`;
+    }
+
+    function applyValues() {
+      const values = readValues();
+      updateLabels(values);
+
+      model.setAttribute("environment-image", values.environmentImage);
+      model.setAttribute("exposure", String(values.exposure));
+      model.setAttribute("environment-intensity", String(values.environmentIntensity));
+      model.setAttribute("shadow-intensity", String(values.shadowIntensity));
+      model.setAttribute("shadow-softness", String(values.shadowSoftness));
+      model.setAttribute("field-of-view", `${values.fieldOfView}deg`);
+      model.setAttribute("camera-orbit", `${values.orbitX}deg ${values.orbitY}deg auto`);
+      model.setAttribute("camera-target", `${values.targetX}m ${values.targetY}m ${values.targetZ}m`);
+      model.setAttribute("orientation", `${values.rotX}deg ${values.rotY}deg ${values.rotZ}deg`);
+
+      updateOutput(values);
+    }
+
+    function resetValues() {
+      environment.value = defaults.environmentImage;
+      document.getElementById("exposure").value = defaults.exposure;
+      document.getElementById("envint").value = defaults.environmentIntensity;
+      document.getElementById("shadow").value = defaults.shadowIntensity;
+      document.getElementById("softness").value = defaults.shadowSoftness;
+      document.getElementById("fov").value = defaults.fieldOfView;
+      document.getElementById("orbitx").value = defaults.orbitX;
+      document.getElementById("orbity").value = defaults.orbitY;
+      document.getElementById("targetx").value = defaults.targetX;
+      document.getElementById("targety").value = defaults.targetY;
+      document.getElementById("targetz").value = defaults.targetZ;
+      document.getElementById("rotx").value = defaults.rotX;
+      document.getElementById("roty").value = defaults.rotY;
+      document.getElementById("rotz").value = defaults.rotZ;
+      applyValues();
+    }
+
+    [
+      "exposure", "envint", "shadow", "softness", "fov",
+      "orbitx", "orbity", "targetx", "targety", "targetz",
+      "rotx", "roty", "rotz"
+    ].forEach((id) => {
+      document.getElementById(id).addEventListener("input", applyValues);
+      document.getElementById(id).addEventListener("change", applyValues);
+    });
+
+    environment.addEventListener("change", applyValues);
+
+    document.getElementById("copy").addEventListener("click", async () => {
+      await navigator.clipboard.writeText(output.value);
+    });
+
+    document.getElementById("reset").addEventListener("click", resetValues);
+
+    model.addEventListener("load", () => {
+      status.textContent = "3D object loaded";
+      applyValues();
+    });
+
+    model.addEventListener("error", () => {
+      status.textContent = "Could not load the 3D object";
+    });
+
+    applyValues();
+  </script>
+</body>
+</html>

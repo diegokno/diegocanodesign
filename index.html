@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Diego Cano</title>
+  <link rel="icon" type="image/svg+xml" href='data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="25" height="30" viewBox="0 0 25 30" fill="none"><path d="M24.9998 30L24.9998 25C19.477 25 14.9998 20.5228 14.9998 15C14.9998 9.47714 19.477 5 24.9998 5V0C16.7155 1.44847e-06 9.99983 6.71573 9.99983 15C9.99983 23.2843 16.7155 30 24.9998 30Z" fill="%23262626"/><path d="M0 2.99485e-08L1.23185e-06 5C5.52282 5 9.99983 9.47716 9.99983 15C9.99983 20.5229 5.52282 25 4.25192e-06 25L4.5301e-06 30C8.28429 30 14.9998 23.2843 14.9998 15C14.9998 6.71573 8.28429 -1.1552e-06 0 2.99485e-08Z" fill="%23262626"/></svg>'>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Instrument+Sans:wght@600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.5.0/model-viewer.min.js"></script>
+</head>
+<body>
+  <div class="cursor-dot" aria-hidden="true"></div>
+  <div class="cursor-follower" aria-hidden="true"></div>
+
+  <header class="site-header">
+    <div class="header-shell">
+      <a class="brand" href="#top" aria-label="Homepage">
+        <svg class="brand-image" xmlns="http://www.w3.org/2000/svg" width="25" height="30" viewBox="0 0 25 30" fill="none" aria-hidden="true">
+          <path d="M24.9998 30L24.9998 25C19.477 25 14.9998 20.5228 14.9998 15C14.9998 9.47714 19.477 5 24.9998 5V0C16.7155 0 9.99983 6.71573 9.99983 15C9.99983 23.2843 16.7155 30 24.9998 30Z" fill="#262626"/>
+          <path d="M0 0L0.00000123185 5C5.52282 5 9.99983 9.47716 9.99983 15C9.99983 20.5229 5.52282 25 0.00000425192 25L0.0000045301 30C8.28429 30 14.9998 23.2843 14.9998 15C14.9998 6.71573 8.28429 0 0 0Z" fill="#262626"/>
+        </svg>
+      </a>
+      <button class="language-toggle" type="button" aria-label="Switch language" aria-pressed="false">
+        <span class="language-current">EN</span>
+        <span class="language-separator">/</span>
+        <span class="language-next">ES</span>
+      </button>
+
+      <nav class="site-nav desktop-nav" aria-label="Primary">
+        <a href="#about">About</a>
+        <a href="#work">Work</a>
+        <a href="#whatido">What I Do</a>
+        <a href="#approach">Approach</a>
+      </nav>
+
+      <a href="#contact" class="header-contact">Contact</a>
+
+      <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="mobile-nav" aria-label="Open navigation">
+        <svg viewBox="0 0 18 18" fill="none" aria-hidden="true">
+          <path class="menu-line menu-line-top" d="M16.875 5C17.4963 5 18 5.50368 18 6.125C18 6.74632 17.4963 7.25 16.875 7.25H1.125C0.50368 7.25 0 6.74632 0 6.125C0 5.50368 0.50368 5 1.125 5H16.875Z" fill="#3C3C3C"/>
+          <path class="menu-line menu-line-bottom" d="M11.25 10.625C11.8713 10.625 12.375 11.1287 12.375 11.75C12.375 12.3713 11.8713 12.875 11.25 12.875H1.125C0.50368 12.875 0 12.3713 0 11.75C0 11.1287 0.50368 10.625 1.125 10.625H11.25Z" fill="#3C3C3C"/>
+        </svg>
+      </button>
+    </div>
+
+    <nav class="site-nav mobile-nav" id="mobile-nav" aria-label="Mobile">
+      <a href="#about">About</a>
+      <a href="#work">Work</a>
+      <a href="#whatido">What I Do</a>
+      <a href="#approach">Approach</a>
+      <a href="#contact" class="mobile-contact">Contact</a>
+    </nav>
+  </header>
+
+  <main class="page" id="top">
+    <section class="hero-scroll" id="about" aria-label="Intro sequence">
+      <div class="hero-sticky">
+        <div class="hero-shell">
+          <div class="hero-copy-wrap">
+            <div class="hero-copy display-copy">
+              <p>
+                <span class="hero-muted">Hey, I'm </span><span class="hero-phrase is-active" data-scene="0">Diego Cano</span><span class="hero-muted">, </span><span class="hero-phrase" data-scene="1">a multidisciplinary product designer</span><span class="hero-muted"> bringing life to </span><span class="hero-phrase" data-scene="2">digital products and AI experiences.</span>
+              </p>
+            </div>
+          </div>
+
+          <div class="model-viewport" aria-hidden="true">
+            <div class="model-stage">
+              <model-viewer
+                id="hero-model"
+                class="hero-model"
+                src="./assets/logo_web.glb"
+                animation-crossfade-duration="0"
+                interpolation-decay="0"
+                shadow-intensity="0"
+                shadow-softness="0"
+                exposure="0.82"
+                environment-image="https://modelviewer.dev/shared-assets/environments/moon_1k.hdr"
+                environment-intensity="1.8"
+                interaction-prompt="none"
+                touch-action="none"
+                camera-orbit="0deg 0deg auto"
+                orientation="0deg 0deg 180deg"
+                camera-target="0m 0m 0m"
+                field-of-view="18deg"
+                alt="Animated 3D logo"
+              ></model-viewer>
+              <div class="model-debug" id="model-debug" hidden>3D model could not be displayed.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-stack">
+      <section class="work-intro frame" id="work">
+        <div class="work-copy-wrap">
+          <div class="work-copy display-copy">
+            <p><span class="dark">Selected work</span><span class="muted"> across product, AI, web, motion, and visual design.</span></p>
+          </div>
+        </div>
+      </section>
+
+      <section class="projects">
+        <article class="project-card work-card" data-gallery="assets/Portfolio/Mia01.jpg|assets/Portfolio/Mia02.jpg|assets/Portfolio/Mia03.jpg|assets/Portfolio/Mia04.jpg|assets/Portfolio/Mia05.jpg" data-title="Mia AI - App">
+          <div class="project-visual" aria-label="Mia AI app preview">
+            <img class="project-image" src="assets/Portfolio/Mia01.jpg" alt="Mia AI app interface preview">
+            <div class="project-overlay">
+              <div class="project-tags" aria-label="Project categories">
+                <span>Product Design</span>
+                <span>AI Interaction</span>
+                <span>Mobile Experience</span>
+                <span>Onboarding</span>
+              </div>
+              <button class="project-cta" type="button" data-project-open>View project &#8594;</button>
+            </div>
+          </div>
+          <div class="project-details">
+            <div class="project-copy">
+              <p class="project-kicker">Product</p>
+              <h2>Mia AI - App</h2>
+              <p>A voice-first AI companion experience designed to make emotional support feel simple, immediate, and human.</p>
+            </div>
+            <div class="project-tools" aria-label="Tools used">
+              <span class="project-tool"><img src="assets/Icons/figma-icon.jpg" alt="Figma"></span>
+              <span class="project-tool"><img src="assets/Icons/spline-icon.jpg" alt="Spline"></span>
+              <span class="project-tool"><img src="assets/Icons/adobe-after-effects-icon.jpg" alt="After Effects"></span>
+            </div>
+            <button class="project-detail-cta" type="button" data-project-open>View project &#8594;</button>
+          </div>
+        </article>
+
+        <article class="project-card work-card" data-embed="https://player.vimeo.com/video/1194552761?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" data-site="https://heymia.ai/" data-title="Mia AI - Website">
+          <div class="project-visual" aria-label="Mia AI website preview">
+            <img class="project-image" src="assets/Portfolio/Mia_web01.jpg" alt="Mia AI website experience preview">
+            <div class="project-overlay">
+              <div class="project-tags" aria-label="Project categories">
+                <span>Web Design</span>
+                <span>Motion Design</span>
+                <span>3D Elements</span>
+                <span>Scroll Section</span>
+              </div>
+              <button class="project-cta" type="button" data-project-open>Watch demo &#8594;</button>
+            </div>
+          </div>
+          <div class="project-details">
+            <div class="project-copy">
+              <p class="project-kicker">Web Experience</p>
+              <h2>Mia AI - Website</h2>
+              <p>A digital experience built to communicate Mia's mission through web, motion, 3D elements, and scroll-based storytelling.</p>
+            </div>
+            <div class="project-tools" aria-label="Tools used">
+              <span class="project-tool"><img src="assets/Icons/figma-icon.jpg" alt="Figma"></span>
+              <span class="project-tool"><img src="assets/Icons/dora-icon.jpg" alt="Dora"></span>
+              <span class="project-tool"><img src="assets/Icons/adobe-after-effects-icon.jpg" alt="After Effects"></span>
+              <span class="project-tool"><img src="assets/Icons/spline-icon.jpg" alt="Spline"></span>
+            </div>
+            <button class="project-detail-cta" type="button" data-project-open>Watch demo &#8594;</button>
+          </div>
+        </article>
+
+        <article class="project-card work-card" data-video="https://framerusercontent.com/assets/MeShWU7oITr703hwKpxnWoM4as.mp4" data-title="Variate Sizzle Reel">
+          <div class="project-visual" aria-label="Variate reel preview">
+            <img class="project-image" src="assets/Portfolio/Variate01.jpg" alt="Variate sizzle reel preview">
+            <div class="project-overlay">
+              <div class="project-tags" aria-label="Project categories">
+                <span>Motion Design</span>
+                <span>Video Editing</span>
+                <span>Art Direction</span>
+              </div>
+              <button class="project-cta" type="button" data-project-open>Watch reel &#8594;</button>
+            </div>
+          </div>
+          <div class="project-details">
+            <div class="project-copy">
+              <p class="project-kicker">Reel</p>
+              <h2>Variate Sizzle Reel</h2>
+              <p>A homepage reel made to condense a broad portfolio into a clear, fast, and polished first impression.</p>
+            </div>
+            <div class="project-tools" aria-label="Tools used">
+              <span class="project-tool"><img src="assets/Icons/adobe-after-effects-icon.jpg" alt="After Effects"></span>
+              <span class="project-tool"><img src="assets/Icons/adobe-premiere-pro-icon.jpg" alt="Premiere Pro"></span>
+              <span class="project-tool"><img src="assets/Icons/figma-icon.jpg" alt="Figma"></span>
+              <span class="project-tool"><img src="assets/Icons/midjourney-icon.jpg" alt="Midjourney"></span>
+            </div>
+            <button class="project-detail-cta" type="button" data-project-open>Watch reel &#8594;</button>
+          </div>
+        </article>
+
+        <article class="project-card work-card" data-embed="https://player.vimeo.com/video/1194554144?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" data-title="Arya OS Concept">
+          <div class="project-visual" aria-label="Arya OS concept preview">
+            <img class="project-image" src="assets/Portfolio/Arya01.jpg" alt="Arya OS concept preview">
+            <div class="project-overlay">
+              <div class="project-tags" aria-label="Project categories">
+                <span>AI Concept</span>
+                <span>Voice UX</span>
+                <span>3D Environment</span>
+                <span>Motion Design</span>
+              </div>
+              <button class="project-cta" type="button" data-project-open>Watch concept &#8594;</button>
+            </div>
+          </div>
+          <div class="project-details">
+            <div class="project-copy">
+              <p class="project-kicker">AI Product Concept</p>
+              <h2>Arya OS Concept</h2>
+              <p>A speculative voice interface concept exploring how an AI assistant could feel present, proactive, and cinematic.</p>
+            </div>
+            <div class="project-tools" aria-label="Tools used">
+              <span class="project-tool"><img src="assets/Icons/blender-icon.jpg" alt="Blender"></span>
+              <span class="project-tool"><img src="assets/Icons/adobe-after-effects-icon.jpg" alt="After Effects"></span>
+              <span class="project-tool"><img src="assets/Icons/adobe-premiere-pro-icon.jpg" alt="Premiere Pro"></span>
+            </div>
+            <button class="project-detail-cta" type="button" data-project-open>Watch concept &#8594;</button>
+          </div>
+        </article>
+
+        <article class="project-card work-card" data-external="https://diego-norha.animaapp.io/" data-title="My Wedding Website">
+          <div class="project-visual" aria-label="My Wedding website preview">
+            <img class="project-image" src="assets/Portfolio/My_Wedding01.jpg" alt="My Wedding website preview">
+            <div class="project-overlay">
+              <div class="project-tags" aria-label="Project categories">
+                <span>Web Design</span>
+                <span>Event Flow</span>
+                <span>Personal Identity</span>
+              </div>
+              <a class="project-cta" href="https://diego-norha.animaapp.io/" target="_blank" rel="noreferrer">Open website &#8594;</a>
+            </div>
+          </div>
+          <div class="project-details">
+            <div class="project-copy">
+              <p class="project-kicker">Personal Site</p>
+              <h2>My Wedding Website</h2>
+              <p>An intimate wedding site designed as a practical invitation for a private celebration surrounded by nature.</p>
+            </div>
+            <div class="project-tools" aria-label="Tools used">
+              <span class="project-tool"><img src="assets/Icons/figma-icon.jpg" alt="Figma"></span>
+              <span class="project-tool"><img src="assets/Icons/anima-app-icon.jpg" alt="Anima"></span>
+            </div>
+            <a class="project-detail-cta" href="https://diego-norha.animaapp.io/" target="_blank" rel="noreferrer">Open website &#8594;</a>
+          </div>
+        </article>
+
+        <article class="project-card work-card" data-gallery="assets/Portfolio/MotoXperience01.jpg|assets/Portfolio/MotoXperience02.jpg|assets/Portfolio/MotoXperience03.jpg|assets/Portfolio/MotoXperience04.jpg" data-title="MotoXperience">
+          <div class="project-visual" aria-label="MotoXperience brand preview">
+            <img class="project-image" src="assets/Portfolio/MotoXperience01.jpg" alt="MotoXperience brand preview">
+            <div class="project-overlay">
+              <div class="project-tags" aria-label="Project categories">
+                <span>Brand Identity</span>
+                <span>Visual System</span>
+                <span>Tourism Experience</span>
+                <span>Web Direction</span>
+              </div>
+              <button class="project-cta" type="button" data-project-open>View project &#8594;</button>
+            </div>
+          </div>
+          <div class="project-details">
+            <div class="project-copy">
+              <p class="project-kicker">Adventure Brand</p>
+              <h2>MotoXperience</h2>
+              <p>A motorcycle tourism identity built around routes, challenge, and the feeling of moving through the open road.</p>
+            </div>
+            <div class="project-tools" aria-label="Tools used">
+              <span class="project-tool"><img src="assets/Icons/figma-icon.jpg" alt="Figma"></span>
+              <span class="project-tool"><img src="assets/Icons/adobe-illustrator-icon.jpg" alt="Illustrator"></span>
+              <span class="project-tool"><img src="assets/Icons/adobe-photoshop-icon.jpg" alt="Photoshop"></span>
+            </div>
+            <button class="project-detail-cta" type="button" data-project-open>View project &#8594;</button>
+          </div>
+        </article>
+
+        <article class="project-card work-card" data-gallery="assets/Portfolio/Ikara01.jpg|assets/Portfolio/Ikara02.jpg|assets/Portfolio/Ikara03.jpg|assets/Portfolio/Ikara04.jpg|assets/Portfolio/Ikara05.jpg|assets/Portfolio/Ikara06.jpg" data-title="Ikara">
+          <div class="project-visual" aria-label="Ikara brand preview">
+            <img class="project-image" src="assets/Portfolio/Ikara01.jpg" alt="Ikara cacao brand preview">
+            <div class="project-overlay">
+              <div class="project-tags" aria-label="Project categories">
+                <span>Brand Identity</span>
+                <span>Naming</span>
+                <span>Packaging System</span>
+                <span>Brand Story</span>
+              </div>
+              <button class="project-cta" type="button" data-project-open>View project &#8594;</button>
+            </div>
+          </div>
+          <div class="project-details">
+            <div class="project-copy">
+              <p class="project-kicker">Organic Brand</p>
+              <h2>Ikara</h2>
+              <p>A cacao-based brand built from naming to packaging, with a visual world inspired by origin, ritual, and nature.</p>
+            </div>
+            <div class="project-tools" aria-label="Tools used">
+              <span class="project-tool"><img src="assets/Icons/adobe-illustrator-icon.jpg" alt="Illustrator"></span>
+              <span class="project-tool"><img src="assets/Icons/adobe-photoshop-icon.jpg" alt="Photoshop"></span>
+            </div>
+            <button class="project-detail-cta" type="button" data-project-open>View project &#8594;</button>
+          </div>
+        </article>
+      </section>
+    </section>
+
+    <div class="project-modal" id="project-modal" aria-hidden="true">
+      <button class="project-modal-backdrop" type="button" data-modal-close aria-label="Close project preview"></button>
+      <div class="project-modal-panel" role="dialog" aria-modal="true" aria-labelledby="project-modal-title">
+        <div class="project-modal-header">
+          <p>Selected project</p>
+          <h2 id="project-modal-title">Project</h2>
+          <button class="project-modal-close" type="button" data-modal-close>Close</button>
+        </div>
+        <div class="project-modal-body" id="project-modal-body"></div>
+      </div>
+    </div>
+
+    <section class="whatido-scroll" id="whatido" aria-label="What I do">
+      <div class="whatido-sticky">
+        <div class="whatido-shell">
+          <div class="whatido-scene" id="whatido-scene">
+            <p class="whatido-intro display-copy" id="whatido-intro">
+              <span class="muted">I help turn digital ideas into clear, usable, and </span>
+              <span class="dark">meaningful experiences.</span>
+            </p>
+
+            <div class="whatido-service-copy" id="whatido-service-copy">
+              <article class="whatido-service-entry">
+                <h2>Product Experiences</h2>
+                <p>I design flows, screens, and interactions that help people move through a digital product without friction.</p>
+              </article>
+              <article class="whatido-service-entry">
+                <h2>AI Interaction Design</h2>
+                <p>I shape how AI shows up in a product, from conversational flows to onboarding, insights, and emotional interfaces.</p>
+              </article>
+              <article class="whatido-service-entry">
+                <h2>Visual Systems</h2>
+                <p>I create visual languages that make websites, apps, campaigns, and digital products feel coherent and memorable.</p>
+              </article>
+              <article class="whatido-service-entry">
+                <h2>Motion &amp; Prototypes</h2>
+                <p>I use motion, video, interaction concepts, and 3D-assisted visuals to explore ideas and make them easier to understand.</p>
+              </article>
+            </div>
+
+            <div class="whatido-shapes" aria-hidden="true">
+              <div class="whatido-shape whatido-shape-1" data-shape="0">
+                <svg class="whatido-shape-stroke" viewBox="0 0 212 212" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M53.5 177.164C92.574 176.895 124.167 145.138 124.167 106C124.167 66.8626 92.574 35.1058 53.5 34.8369L53.5 0.503906C111.536 0.77321 158.5 47.9007 158.5 106C158.5 164.099 111.536 211.228 53.5 211.497L53.5 177.164Z" />
+                  <path d="M158.5 34.836C119.426 35.1048 87.833 66.8625 87.833 106C87.833 145.137 119.426 176.894 158.5 177.163L158.5 211.496C100.464 211.227 53.5 164.099 53.5 106C53.5 47.9007 100.464 0.772255 158.5 0.502957L158.5 34.836Z" />
+                </svg>
+                <svg class="whatido-shape-fill" viewBox="0 0 212 212" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M53.5 177.164C92.574 176.895 124.167 145.138 124.167 106C124.167 66.8626 92.574 35.1058 53.5 34.8369L53.5 0.503906C111.536 0.77321 158.5 47.9007 158.5 106C158.5 164.099 111.536 211.228 53.5 211.497L53.5 177.164Z" fill="#262626" />
+                  <path d="M158.5 34.836C119.426 35.1048 87.833 66.8625 87.833 106C87.833 145.137 119.426 176.894 158.5 177.163L158.5 211.496C100.464 211.227 53.5 164.099 53.5 106C53.5 47.9007 100.464 0.772255 158.5 0.502957L158.5 34.836Z" fill="#262626" />
+                </svg>
+              </div>
+              <div class="whatido-shape whatido-shape-2" data-shape="1">
+                <svg class="whatido-shape-stroke" viewBox="0 0 212 212" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M176.33 176.5C176.062 137.428 144.456 105.833 105.5 105.833C66.5437 105.833 34.9385 137.428 34.6709 176.5L0.503902 176.5C0.771943 118.462 47.6783 71.5 105.5 71.5C163.322 71.5 210.229 118.462 210.497 176.5L176.33 176.5Z" />
+                  <path d="M34.5 177.164C73.574 176.895 105.167 145.138 105.167 106C105.167 66.8626 73.574 35.1058 34.5 34.8369L34.5 0.503897C92.5362 0.773218 139.5 47.9007 139.5 106C139.5 164.099 92.5362 211.228 34.5 211.497L34.5 177.164Z" />
+                </svg>
+                <svg class="whatido-shape-fill" viewBox="0 0 212 212" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M176.33 176.5C176.062 137.428 144.456 105.833 105.5 105.833C66.5437 105.833 34.9385 137.428 34.6709 176.5L0.503902 176.5C0.771943 118.462 47.6783 71.5 105.5 71.5C163.322 71.5 210.229 118.462 210.497 176.5L176.33 176.5Z" fill="#262626" />
+                  <path d="M34.5 177.164C73.574 176.895 105.167 145.138 105.167 106C105.167 66.8626 73.574 35.1058 34.5 34.8369L34.5 0.503897C92.5362 0.773218 139.5 47.9007 139.5 106C139.5 164.099 92.5362 211.228 34.5 211.497L34.5 177.164Z" fill="#262626" />
+                </svg>
+              </div>
+              <div class="whatido-shape whatido-shape-3" data-shape="2">
+                <svg class="whatido-shape-stroke" viewBox="0 0 212 212" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M34.6699 0.5C34.9375 39.5718 66.5436 71.167 105.5 71.167C144.456 71.167 176.061 39.5718 176.329 0.500002L210.496 0.500003C210.228 58.5384 163.322 105.5 105.5 105.5C47.6783 105.5 0.770966 58.5384 0.502931 0.5L34.6699 0.5Z" />
+                  <path d="M177.164 210.5C176.893 171.79 145.132 140.5 106 140.5C66.8686 140.5 35.1083 171.79 34.8369 210.5L0.503907 210.5C0.775787 153.02 47.8979 106.5 106 106.5C164.102 106.5 211.225 153.02 211.497 210.5L177.164 210.5Z" />
+                </svg>
+                <svg class="whatido-shape-fill" viewBox="0 0 212 212" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M34.6699 0.5C34.9375 39.5718 66.5436 71.167 105.5 71.167C144.456 71.167 176.061 39.5718 176.329 0.500002L210.496 0.500003C210.228 58.5384 163.322 105.5 105.5 105.5C47.6783 105.5 0.770966 58.5384 0.502931 0.5L34.6699 0.5Z" fill="#262626" />
+                  <path d="M177.164 210.5C176.893 171.79 145.132 140.5 106 140.5C66.8686 140.5 35.1083 171.79 34.8369 210.5L0.503907 210.5C0.775787 153.02 47.8979 106.5 106 106.5C164.102 106.5 211.225 153.02 211.497 210.5L177.164 210.5Z" fill="#262626" />
+                </svg>
+              </div>
+              <div class="whatido-shape whatido-shape-4" data-shape="3">
+                <svg class="whatido-shape-stroke" viewBox="0 0 212 212" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M34.6699 0.500005C34.9375 39.5718 66.5436 71.167 105.5 71.167C144.456 71.167 176.062 39.5718 176.329 0.500023L210.496 0.500028C210.228 58.5385 163.322 105.5 105.5 105.5C47.6783 105.5 0.770972 58.5384 0.502944 0.5L34.6699 0.500005Z" />
+                  <path d="M34.8359 106.5C35.1073 145.21 66.8685 176.5 106 176.5C145.131 176.5 176.892 145.21 177.163 106.5L211.496 106.5C211.224 163.98 164.102 210.5 106 210.5C47.8979 210.5 0.774811 163.98 0.502938 106.5L34.8359 106.5Z" />
+                </svg>
+                <svg class="whatido-shape-fill" viewBox="0 0 212 212" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M34.6699 0.500005C34.9375 39.5718 66.5436 71.167 105.5 71.167C144.456 71.167 176.062 39.5718 176.329 0.500023L210.496 0.500028C210.228 58.5385 163.322 105.5 105.5 105.5C47.6783 105.5 0.770972 58.5384 0.502944 0.5L34.6699 0.500005Z" fill="#262626" />
+                  <path d="M34.8359 106.5C35.1073 145.21 66.8685 176.5 106 176.5C145.131 176.5 176.892 145.21 177.163 106.5L211.496 106.5C211.224 163.98 164.102 210.5 106 210.5C47.8979 210.5 0.774811 163.98 0.502938 106.5L34.8359 106.5Z" fill="#262626" />
+                </svg>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="approach-scroll" id="approach" aria-label="Approach">
+      <div class="approach-sticky">
+        <div class="approach-shell">
+          <div class="approach-copy">
+            <span class="approach-line is-active">Before deciding how something</span>
+            <span class="approach-line">should look, I focus on what it</span>
+            <span class="approach-line">needs to say, what should feel</span>
+            <span class="approach-line">easier, and what should stay</span>
+            <span class="approach-line">with people after.</span>
+          </div>
+
+          <div class="approach-points" aria-hidden="true">
+            <div class="approach-point">
+              <img src="https://www.figma.com/api/mcp/asset/693b2012-0907-436a-8b17-488704884339" alt="">
+              <p>What it needs to say</p>
+            </div>
+            <div class="approach-point">
+              <img src="https://www.figma.com/api/mcp/asset/693b2012-0907-436a-8b17-488704884339" alt="">
+              <p>How it should feel</p>
+            </div>
+            <div class="approach-point">
+              <img src="https://www.figma.com/api/mcp/asset/693b2012-0907-436a-8b17-488704884339" alt="">
+              <p>Where people should go</p>
+            </div>
+            <div class="approach-point">
+              <img src="https://www.figma.com/api/mcp/asset/693b2012-0907-436a-8b17-488704884339" alt="">
+              <p>What should stay with them</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="contact-section" id="contact" aria-label="Contact">
+      <div class="contact-shell">
+        <div class="contact-heading" id="contact-heading">Drop me a message!</div>
+        <div class="contact-links">
+          <a href="mailto:diego.cm.1989@gmail.com" class="contact-link" data-hover="diego.cm.1989@gmail.com"><span>Email me</span><span>diego.cm.1989@gmail.com</span></a>
+          <a href="https://wa.me/51941037709" class="contact-link" target="_blank" rel="noreferrer" data-hover="+51 941 037 709"><span>Whatsapp</span><span>+51 941 037 709</span></a>
+          <a href="https://www.linkedin.com/in/diegocanomendoza" class="contact-link" target="_blank" rel="noreferrer" data-hover="diegocanomendoza"><span>Linkedin</span><span>diegocanomendoza</span></a>
+          <a href="https://instagram.com/diegocanomendoza" class="contact-link" target="_blank" rel="noreferrer" data-hover="@diegocanomendoza"><span>Instagram</span><span>@diegocanomendoza</span></a>
+        </div>
+      </div>
+    </section>
+
+    <footer class="site-footer">
+      <p>Designed and built by me 🤓</p>
+    </footer>
+  </main>
+
+  <script type="module" src="script.js"></script>
+</body>
+</html>

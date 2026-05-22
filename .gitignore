@@ -1,0 +1,8 @@
+.backup/
+backup/
+.edge-mobile-check/
+node_modules/
+.env
+.env.*
+.DS_Store
+Thumbs.db

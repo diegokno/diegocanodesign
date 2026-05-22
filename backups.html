@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Diego Cano - Backups</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg: #ebebeb;
+      --text: #262626;
+      --muted: #767676;
+      --line: rgba(38, 38, 38, 0.14);
+      --panel: rgba(255, 255, 255, 0.32);
+    }
+
+    body {
+      margin: 0;
+      min-width: 320px;
+      background: var(--bg);
+      color: var(--text);
+      font-family: "DM Sans", sans-serif;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .shell {
+      width: min(100%, 1600px);
+      margin: 0 auto;
+      padding: 48px 80px 80px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      margin-bottom: 86px;
+    }
+
+    .back-link,
+    .file-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      transition: background 160ms ease, color 160ms ease, border-color 160ms ease;
+    }
+
+    .back-link {
+      padding: 8px 16px;
+      font-size: 14px;
+      text-transform: uppercase;
+    }
+
+    .back-link:hover,
+    .file-link:hover {
+      border-color: var(--text);
+      background: var(--text);
+      color: var(--bg);
+    }
+
+    h1 {
+      max-width: 840px;
+      margin: 0 0 20px;
+      font-family: "Instrument Serif", serif;
+      font-size: 64px;
+      font-weight: 400;
+      line-height: 1.02;
+      letter-spacing: 1px;
+    }
+
+    .intro {
+      max-width: 620px;
+      margin: 0 0 72px;
+      color: var(--muted);
+      font-size: 18px;
+      font-weight: 300;
+      line-height: 1.5;
+    }
+
+    .backup-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .backup-card {
+      min-height: 220px;
+      padding: 24px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: var(--panel);
+      backdrop-filter: blur(10px);
+    }
+
+    .backup-card h2 {
+      margin: 0 0 10px;
+      font-family: "Instrument Serif", serif;
+      font-size: 34px;
+      font-weight: 400;
+      line-height: 1;
+    }
+
+    .backup-card p {
+      margin: 0 0 28px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.45;
+    }
+
+    .files {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .file-link {
+      padding: 7px 12px;
+      font-size: 12px;
+      text-transform: uppercase;
+    }
+
+    code {
+      display: block;
+      margin-top: 24px;
+      padding-top: 18px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+      word-break: break-all;
+    }
+
+    @media (max-width: 900px) {
+      .shell {
+        padding: 28px 18px 48px;
+      }
+
+      .topbar {
+        margin-bottom: 54px;
+      }
+
+      h1 {
+        font-size: 44px;
+      }
+
+      .backup-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <div class="topbar">
+      <a class="back-link" href="./index.html">Back to site</a>
+      <a class="back-link" href="./model-tuner-2.html">3D Tuner 2</a>
+    </div>
+
+    <h1>Backup portal</h1>
+    <p class="intro">A simple index of the saved states in this project. Open the HTML files to inspect a backup in the browser, or use the paths as restore references.</p>
+
+    <section class="backup-grid" aria-label="Saved backups">
+      <article class="backup-card">
+        <h2>Before Mobile Fixes 2</h2>
+        <p>The state saved before fixing the mobile header balance, 3D clipping container, and mobile What I Do timing.</p>
+        <div class="files">
+          <a class="file-link" href="./.backup/2026-05-15-before-mobile-fixes-2/index.html">HTML</a>
+          <a class="file-link" href="./.backup/2026-05-15-before-mobile-fixes-2/styles.css">CSS</a>
+          <a class="file-link" href="./.backup/2026-05-15-before-mobile-fixes-2/script.js">JS</a>
+        </div>
+        <code>C:\Users\diego\Documents\Diego\Web\.backup\2026-05-15-before-mobile-fixes-2</code>
+      </article>
+
+      <article class="backup-card">
+        <h2>Before Mobile Rework</h2>
+        <p>The approved desktop state saved right before rebuilding the mobile experience.</p>
+        <div class="files">
+          <a class="file-link" href="./.backup/2026-05-15-before-mobile-rework/index.html">HTML</a>
+          <a class="file-link" href="./.backup/2026-05-15-before-mobile-rework/styles.css">CSS</a>
+          <a class="file-link" href="./.backup/2026-05-15-before-mobile-rework/script.js">JS</a>
+        </div>
+        <code>C:\Users\diego\Documents\Diego\Web\.backup\2026-05-15-before-mobile-rework</code>
+      </article>
+
+      <article class="backup-card">
+        <h2>Desktop Approved</h2>
+        <p>The desktop version saved immediately before starting the mobile optimization pass.</p>
+        <div class="files">
+          <a class="file-link" href="./.backup/2026-05-15-desktop-approved-before-mobile/index.html">HTML</a>
+          <a class="file-link" href="./.backup/2026-05-15-desktop-approved-before-mobile/styles.css">CSS</a>
+          <a class="file-link" href="./.backup/2026-05-15-desktop-approved-before-mobile/script.js">JS</a>
+        </div>
+        <code>C:\Users\diego\Documents\Diego\Web\.backup\2026-05-15-desktop-approved-before-mobile</code>
+      </article>
+
+      <article class="backup-card">
+        <h2>Vector Transition Good</h2>
+        <p>The version saved after the vector transition felt right, before the final queue correction.</p>
+        <div class="files">
+          <a class="file-link" href="./.backup/2026-05-15-vector-transition-good/index.html">HTML</a>
+          <a class="file-link" href="./.backup/2026-05-15-vector-transition-good/styles.css">CSS</a>
+          <a class="file-link" href="./.backup/2026-05-15-vector-transition-good/script.js">JS</a>
+        </div>
+        <code>C:\Users\diego\Documents\Diego\Web\.backup\2026-05-15-vector-transition-good</code>
+      </article>
+
+      <article class="backup-card">
+        <h2>Near final</h2>
+        <p>The version saved right before the latest vector timing correction.</p>
+        <div class="files">
+          <a class="file-link" href="./.backup/2026-05-15-near-final/index.html">HTML</a>
+          <a class="file-link" href="./.backup/2026-05-15-near-final/styles.css">CSS</a>
+          <a class="file-link" href="./.backup/2026-05-15-near-final/script.js">JS</a>
+        </div>
+        <code>C:\Users\diego\Documents\Diego\Web\.backup\2026-05-15-near-final</code>
+      </article>
+
+      <article class="backup-card">
+        <h2>Liked What I Do</h2>
+        <p>The saved point after What I Do and Approach started feeling right.</p>
+        <div class="files">
+          <a class="file-link" href="./.backup/2026-05-15-liked-whatido-approach/index.html">HTML</a>
+          <a class="file-link" href="./.backup/2026-05-15-liked-whatido-approach/styles.css">CSS</a>
+          <a class="file-link" href="./.backup/2026-05-15-liked-whatido-approach/script.js">JS</a>
+        </div>
+        <code>C:\Users\diego\Documents\Diego\Web\.backup\2026-05-15-liked-whatido-approach</code>
+      </article>
+
+      <article class="backup-card">
+        <h2>Round 2</h2>
+        <p>The state saved before the second polish pass on the new sections.</p>
+        <div class="files">
+          <a class="file-link" href="./.backup/2026-05-15-round-2-before-polish/index.html">HTML</a>
+          <a class="file-link" href="./.backup/2026-05-15-round-2-before-polish/styles.css">CSS</a>
+          <a class="file-link" href="./.backup/2026-05-15-round-2-before-polish/script.js">JS</a>
+        </div>
+        <code>C:\Users\diego\Documents\Diego\Web\.backup\2026-05-15-round-2-before-polish</code>
+      </article>
+
+      <article class="backup-card">
+        <h2>Pre Big Sections</h2>
+        <p>The version saved before adding What I Do, Approach, Contact, and footer.</p>
+        <div class="files">
+          <a class="file-link" href="./.backup/2026-05-15-pre-big-sections/index.html">HTML</a>
+          <a class="file-link" href="./.backup/2026-05-15-pre-big-sections/styles.css">CSS</a>
+          <a class="file-link" href="./.backup/2026-05-15-pre-big-sections/script.js">JS</a>
+        </div>
+        <code>C:\Users\diego\Documents\Diego\Web\.backup\2026-05-15-pre-big-sections</code>
+      </article>
+
+      <article class="backup-card">
+        <h2>Pre Three.js Hero</h2>
+        <p>The state saved before the temporary Three.js hero experiment.</p>
+        <div class="files">
+          <a class="file-link" href="./.backup/pre-threejs-hero-2026-05-13/index.html">HTML</a>
+          <a class="file-link" href="./.backup/pre-threejs-hero-2026-05-13/styles.css">CSS</a>
+          <a class="file-link" href="./.backup/pre-threejs-hero-2026-05-13/script.js">JS</a>
+        </div>
+        <code>C:\Users\diego\Documents\Diego\Web\.backup\pre-threejs-hero-2026-05-13</code>
+      </article>
+
+      <article class="backup-card">
+        <h2>3D</h2>
+        <p>Older 3D related backup folder from the tuning phase.</p>
+        <div class="files">
+          <a class="file-link" href="./.backup/3d/">Folder</a>
+        </div>
+        <code>C:\Users\diego\Documents\Diego\Web\.backup\3d</code>
+      </article>
+    </section>
+  </main>
+</body>
+</html>
