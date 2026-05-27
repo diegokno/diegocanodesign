@@ -315,6 +315,7 @@ function updateWhatIdoScene(progress) {
         const introShape = introShapes[index];
         shape.style.setProperty("--shape-x", introShape.x);
         shape.style.setProperty("--shape-y", introShape.y);
+        shape.style.setProperty("--shape-center-x", "0px");
         shape.style.setProperty("--shape-size", `${introShape.size}px`);
         shape.style.setProperty("--shape-opacity", introReveal.toFixed(4));
         shape.style.setProperty("--fill-opacity", "0");
@@ -323,9 +324,12 @@ function updateWhatIdoScene(progress) {
       }
 
       const isActiveShape = index === activeServiceIndex;
-      const shapeSize = Math.min(window.innerWidth * 0.9, 430);
-      shape.style.setProperty("--shape-x", `calc(50% - ${shapeSize / 2}px)`);
-      shape.style.setProperty("--shape-y", "10svh");
+      const shapeSize = Math.min(window.innerWidth * 0.78, 360);
+      const shapeParentLeft = shape.parentElement?.getBoundingClientRect().left || 0;
+      const viewportCenterX = window.innerWidth / 2;
+      shape.style.setProperty("--shape-x", `${viewportCenterX - shapeParentLeft}px`);
+      shape.style.setProperty("--shape-y", "8svh");
+      shape.style.setProperty("--shape-center-x", "-50%");
       shape.style.setProperty("--shape-size", `${shapeSize}px`);
       shape.style.setProperty("--shape-opacity", isActiveShape ? serviceShapeReveal.toFixed(4) : "0");
       shape.style.setProperty("--fill-opacity", isActiveShape ? serviceShapeReveal.toFixed(4) : "0");
@@ -387,7 +391,8 @@ function updateWhatIdoScene(progress) {
     const strokeVisibility = rawFill > 0.22 ? 0 : rawStroke * (1 - smoothstep(mapRange(rawFill, 0.04, 0.22, 0, 1)));
     shape.style.setProperty("--shape-x", `${x}vw`);
     shape.style.setProperty("--shape-y", `${y}vh`);
-    shape.style.setProperty("--shape-size", `${212 * scale}px`);
+    const responsiveScale = window.innerWidth <= 1280 ? 0.84 : 1;
+    shape.style.setProperty("--shape-size", `${212 * scale * responsiveScale}px`);
     shape.style.setProperty("--shape-opacity", opacity.toFixed(4));
     shape.style.setProperty("--fill-opacity", rawFill.toFixed(4));
     shape.style.setProperty("--stroke-opacity", clamp(strokeVisibility, 0, 1).toFixed(4));
