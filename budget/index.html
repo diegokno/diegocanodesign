@@ -1,0 +1,1561 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Budget | Diego Cano</title>
+  <link rel="icon" type="image/svg+xml" href='data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="25" height="30" viewBox="0 0 25 30" fill="none"><path d="M24.9998 30L24.9998 25C19.477 25 14.9998 20.5228 14.9998 15C14.9998 9.47714 19.477 5 24.9998 5V0C16.7155 0 9.99983 6.71573 9.99983 15C9.99983 23.2843 16.7155 30 24.9998 30Z" fill="%23262626"/><path d="M0 0L0.00000123185 5C5.52282 5 9.99983 9.47716 9.99983 15C9.99983 20.5229 5.52282 25 0.00000425192 25L0.0000045301 30C8.28429 30 14.9998 23.2843 14.9998 15C14.9998 6.71573 8.28429 0 0 0Z" fill="%23262626"/></svg>'>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Instrument+Sans:wght@600;700&family=Instrument+Serif&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink: #262626;
+      --black: #18181b;
+      --muted: #626262;
+      --soft: #f4f4f5;
+      --line: rgba(24, 24, 27, 0.2);
+      --panel: rgba(255, 255, 255, 0.5);
+    }
+
+    * { box-sizing: border-box; }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      background: #fff;
+      color: var(--ink);
+      font-family: "DM Sans", sans-serif;
+    }
+
+    body {
+      min-height: 100svh;
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    button,
+    label {
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .budget-page {
+      width: 100%;
+      min-height: 100svh;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 24px;
+      padding: 24px;
+    }
+
+    .question-panel {
+      min-width: 0;
+      height: calc(100svh - 48px);
+      display: grid;
+      grid-template-rows: auto auto minmax(0, 1fr) auto auto;
+      gap: clamp(18px, 2.2svh, 28px);
+      padding: 24px;
+    }
+
+    .intro {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 24px;
+      text-align: center;
+    }
+
+    .logo {
+      width: 50px;
+      height: 60px;
+      display: block;
+    }
+
+    .intro-copy {
+      display: grid;
+      gap: 10px;
+      max-width: 560px;
+    }
+
+    h1 {
+      margin: 0;
+      font-family: "Instrument Serif", serif;
+      font-size: clamp(36px, 3.6vw, 44px);
+      line-height: 1.3;
+      letter-spacing: 0.88px;
+      font-weight: 400;
+    }
+
+    .intro p,
+    .step-lead,
+    .hint,
+    .choice-copy,
+    .addon-copy,
+    .estimate-copy,
+    .note {
+      margin: 0;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.25;
+    }
+
+    .intro p {
+      font-size: 16px;
+      line-height: 1.15;
+    }
+
+    .progress {
+      display: grid;
+      gap: 8px;
+      font-family: "Instrument Sans", sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    .progress-track {
+      height: 1px;
+      width: 100%;
+      background: rgba(24, 24, 27, 0.08);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: 25%;
+      background: var(--black);
+      transition: width 420ms cubic-bezier(.2, .8, .2, 1);
+    }
+
+    .steps {
+      min-height: 0;
+      height: 100%;
+    }
+
+    .step {
+      display: none;
+      flex-direction: column;
+      gap: clamp(20px, 2.8svh, 28px);
+      height: 100%;
+      min-height: 0;
+      overflow: auto;
+      scrollbar-width: thin;
+    }
+
+    .step.is-active {
+      display: flex;
+      animation: stepIn 360ms cubic-bezier(.2, .8, .2, 1);
+    }
+
+    @keyframes stepIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .step-heading {
+      display: grid;
+      gap: 10px;
+      flex: 0 0 auto;
+    }
+
+    h2 {
+      margin: 0;
+      font-family: "Instrument Sans", sans-serif;
+      font-size: 20px;
+      line-height: 1;
+      font-weight: 600;
+    }
+
+    .choice-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 24px;
+    }
+
+    .choice-grid.one-col {
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+
+    .option {
+      position: relative;
+      cursor: pointer;
+      min-width: 0;
+    }
+
+    .option input {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .option-card {
+      min-height: 82px;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 10px;
+      padding: 24px;
+      border: 0.5px solid var(--line);
+      border-radius: 24px;
+      background: rgba(255, 255, 255, 0.62);
+      transition: border 180ms ease, background 180ms ease;
+    }
+
+    .option input:checked + .option-card {
+      border: 1px solid var(--black);
+      background: #fff;
+    }
+
+    .option-card strong,
+    .addon-title,
+    .estimate-label,
+    .metric strong {
+      font-family: "Instrument Sans", sans-serif;
+      font-size: 13px;
+      line-height: 1;
+      font-weight: 700;
+      color: var(--ink);
+    }
+
+    .checkmark {
+      position: absolute;
+      top: 17px;
+      right: 17px;
+      opacity: 0;
+      color: var(--black);
+      font-family: "Instrument Sans", sans-serif;
+      font-size: 16px;
+      line-height: 1;
+      transition: opacity 160ms ease;
+    }
+
+    input:checked + .option-card .checkmark,
+    .addon input:checked + .addon-card .checkmark {
+      opacity: 1;
+    }
+
+    .addon .checkmark {
+      display: none;
+    }
+
+    .slider-block {
+      display: grid;
+      gap: 24px;
+    }
+
+    .block-title {
+      margin: 0;
+      font-family: "Instrument Sans", sans-serif;
+      font-size: 13px;
+      line-height: 1;
+      font-weight: 700;
+    }
+
+    .range-wrap {
+      display: grid;
+      gap: 12px;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      height: 4px;
+      margin: 0;
+      appearance: none;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--black) var(--range, 0%), var(--soft) var(--range, 0%));
+      outline: none;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      appearance: none;
+      width: 12px;
+      height: 12px;
+      border-radius: 999px;
+      border: 1px solid #a1a1a1;
+      background: #fff;
+      cursor: grab;
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 12px;
+      height: 12px;
+      border-radius: 999px;
+      border: 1px solid #a1a1a1;
+      background: #fff;
+      cursor: grab;
+    }
+
+    .range-labels {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      align-items: start;
+      gap: 0;
+      color: #a1a1a1;
+      font-size: 10px;
+      line-height: 1.15;
+    }
+
+    .range-labels span {
+      display: grid;
+      gap: 2px;
+    }
+
+    .range-labels span:nth-child(1) { text-align: left; }
+    .range-labels span:nth-child(2),
+    .range-labels span:nth-child(3) { text-align: center; }
+    .range-labels span:nth-child(4) { text-align: right; }
+
+    .range-labels strong {
+      color: var(--black);
+      font-weight: 600;
+    }
+
+    .range-labels small {
+      font-size: 8px;
+      color: var(--black);
+      font-weight: 500;
+    }
+
+    .visual-detail {
+      display: grid;
+      grid-template-rows: 0fr;
+      opacity: 0;
+      transition: grid-template-rows 280ms ease, opacity 220ms ease;
+    }
+
+    .visual-detail.is-open {
+      grid-template-rows: 1fr;
+      opacity: 1;
+    }
+
+    .visual-detail-inner {
+      min-height: 0;
+      overflow: hidden;
+      display: grid;
+      gap: 16px;
+    }
+
+    .radio-option {
+      display: grid;
+      grid-template-columns: 16px minmax(0, 1fr);
+      gap: 12px;
+      cursor: pointer;
+    }
+
+    .radio-option input {
+      width: 16px;
+      height: 16px;
+      margin: 0;
+      accent-color: var(--black);
+    }
+
+    .radio-option strong {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 11px;
+      line-height: 1;
+      font-weight: 600;
+    }
+
+    .radio-option small {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.2;
+    }
+
+    .addons {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .addon {
+      position: relative;
+      cursor: pointer;
+      min-width: 0;
+    }
+
+    .addon input {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .addon-card {
+      min-height: 52px;
+      height: 100%;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 4px;
+      padding: 16px 12px;
+      border: 0.5px solid var(--line);
+      border-radius: 15px;
+      background: #fff;
+      transition: border 180ms ease;
+    }
+
+    .addon input:checked + .addon-card {
+      border: 1.5px solid var(--black);
+    }
+
+    .addon input:checked + .addon-card .addon-badge {
+      background: var(--black);
+      color: #fff;
+    }
+
+    .addon-title {
+      padding-right: 76px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .addon-copy {
+      color: var(--muted);
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+
+    .addon-badge {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      border-radius: 8px;
+      background: #ebebeb;
+      padding: 2px 8px;
+      color: var(--ink);
+      font-size: 10px;
+      line-height: 1;
+      font-style: normal;
+      font-weight: 600;
+    }
+
+    @media (max-height: 760px) and (min-width: 861px) {
+      .addon.is-included {
+        display: none;
+      }
+    }
+
+    .divider {
+      width: 100%;
+      height: 1px;
+      background: rgba(24, 24, 27, 0.08);
+    }
+
+    .actions {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 27px;
+    }
+
+    .button {
+      width: 100%;
+      border: 1px solid var(--black);
+      border-radius: 22px;
+      padding: 8px 16px;
+      background: transparent;
+      color: var(--black);
+      font-family: "Instrument Sans", sans-serif;
+      font-size: 14px;
+      line-height: 1;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 180ms ease, background 180ms ease, color 180ms ease;
+    }
+
+    .button:hover {
+      transform: translateY(-1px);
+    }
+
+    .button.primary {
+      background: var(--black);
+      color: #fff;
+    }
+
+    .button:disabled {
+      opacity: 0.35;
+      cursor: default;
+      transform: none;
+    }
+
+    .estimate-shell {
+      position: relative;
+      height: calc(100svh - 48px);
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: clamp(14px, 2.6svh, 24px);
+      padding: clamp(38px, 10.8svh, 91px) clamp(44px, 6.6vw, 82px);
+      border-radius: 64px;
+      overflow: hidden;
+      background: radial-gradient(116.95% 99.16% at 50% 0.84%, #DCE5F6 0%, #DCE5F6 14.29%, #E8E9EE 28.57%, #E4E5D7 42.86%, #FAE4BF 57.14%, #E7E7E6 71.43%, #DCE4F5 85.71%, #DAE3F7 100%);
+      background-size: 115% 115%;
+      animation: budgetGradient 12s ease-in-out infinite alternate;
+      isolation: isolate;
+    }
+
+    @keyframes budgetGradient {
+      from { background-position: 50% 0%; }
+      to { background-position: 48% 4%; }
+    }
+
+    .estimate-card {
+      width: min(100%, 454px);
+      display: flex;
+      flex-direction: column;
+      gap: clamp(18px, 3.1svh, 32px);
+      padding: clamp(18px, 2.9svh, 24px);
+      border: 1px solid #fff;
+      border-radius: 32px;
+      background: var(--panel);
+      backdrop-filter: blur(60px);
+      -webkit-backdrop-filter: blur(60px);
+    }
+
+    .estimate-top {
+      display: grid;
+      gap: 16px;
+    }
+
+    .estimate-label {
+      font-weight: 600;
+    }
+
+    .amount {
+      font-family: "Instrument Sans", sans-serif;
+      font-size: 32px;
+      line-height: 1;
+      font-weight: 600;
+    }
+
+    .estimate-copy {
+      font-size: 16px;
+      line-height: 1.2;
+      opacity: 0.7;
+    }
+
+    .metrics {
+      display: grid;
+      gap: clamp(10px, 1.9svh, 16px);
+    }
+
+    .metric {
+      display: grid;
+      grid-template-columns: minmax(80px, 1fr) minmax(0, 2fr);
+      gap: 16px;
+      align-items: center;
+      padding-top: clamp(10px, 1.9svh, 16px);
+      border-top: 1px solid rgba(24, 24, 27, 0.08);
+      font-size: 11px;
+      line-height: 1;
+    }
+
+    .metric span {
+      color: var(--muted);
+      opacity: 0.7;
+    }
+
+    .metric strong {
+      justify-self: end;
+      text-align: right;
+      line-height: 1.15;
+    }
+
+    .note {
+      padding: 8px;
+      border-radius: 8px;
+      background: #fff;
+      color: rgba(38, 38, 38, 0.7);
+      font-size: 10px;
+      line-height: 1.25;
+    }
+
+    .note strong {
+      font-weight: 600;
+      color: rgba(38, 38, 38, 0.82);
+    }
+
+    .consult {
+      width: min(100%, 454px);
+      display: block;
+      text-align: center;
+      text-decoration: none;
+    }
+
+    .mobile-drawer {
+      display: none;
+    }
+
+    @media (min-width: 1500px) and (min-height: 820px) {
+      .budget-page {
+        padding: clamp(28px, 1.8vw, 36px);
+      }
+
+      .question-panel,
+      .estimate-shell {
+        height: calc(100svh - clamp(56px, 3.6vw, 72px));
+      }
+
+      .question-panel {
+        padding: clamp(28px, 1.8vw, 36px);
+      }
+
+      .estimate-shell {
+        padding: clamp(74px, 8svh, 108px) clamp(72px, 5vw, 104px);
+      }
+
+      h1 {
+        font-size: clamp(48px, 3.1vw, 54px);
+      }
+
+      .intro p,
+      .estimate-copy {
+        font-size: 18px;
+      }
+
+      h2 {
+        font-size: 22px;
+      }
+
+      .option-card {
+        min-height: 92px;
+      }
+
+      .option-card strong,
+      .addon-title,
+      .metric strong,
+      .block-title,
+      .progress {
+        font-size: 14px;
+      }
+
+      .choice-copy,
+      .addon-copy,
+      .step-lead,
+      .hint,
+      .metric {
+        font-size: 12px;
+      }
+
+      .button,
+      .estimate-label {
+        font-size: 15px;
+      }
+
+      .amount {
+        font-size: 36px;
+      }
+
+      .note {
+        font-size: 11px;
+      }
+    }
+
+    @media (max-width: 1100px) and (orientation: landscape) {
+      .budget-page {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px;
+        padding: 18px;
+      }
+
+      .question-panel,
+      .estimate-shell {
+        height: calc(100svh - 36px);
+      }
+
+      .question-panel {
+        padding: 18px;
+      }
+
+      .estimate-shell {
+        min-height: auto;
+        padding: 44px 36px;
+      }
+
+      .intro {
+        gap: 16px;
+      }
+
+      .logo {
+        width: 42px;
+        height: 50px;
+      }
+
+      h1 {
+        font-size: 36px;
+      }
+
+      .step {
+        gap: 18px;
+      }
+
+      .option-card {
+        padding: 18px;
+      }
+
+      .addons {
+        gap: 12px;
+      }
+
+      .addon.is-included {
+        display: none;
+      }
+    }
+
+    @media (max-width: 860px), (orientation: portrait) and (max-width: 1180px) {
+      html,
+      body {
+        overflow: hidden;
+      }
+
+      body {
+        display: block;
+        padding-bottom: 0;
+      }
+
+      .budget-page {
+        display: block;
+        height: calc(100svh - 94px);
+        min-height: 0;
+        padding: 18px;
+        overflow: hidden;
+      }
+
+      .question-panel {
+        min-height: 0;
+        height: 100%;
+        padding: 0;
+        gap: clamp(12px, 2.4svh, 22px);
+      }
+
+      .intro {
+        gap: clamp(10px, 2svh, 18px);
+        padding-top: 4px;
+      }
+
+      .logo {
+        width: 38px;
+        height: 46px;
+      }
+
+      h1 {
+        font-size: clamp(30px, 8.8vw, 36px);
+      }
+
+      .intro p {
+        font-size: clamp(12px, 3.3vw, 14px);
+      }
+
+      .step {
+        gap: clamp(14px, 2.6svh, 22px);
+        padding-right: 3px;
+      }
+
+      .choice-grid,
+      .addons {
+        grid-template-columns: 1fr;
+        gap: 14px;
+      }
+
+      .choice-grid.mobile-two {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .option-card {
+        min-height: auto;
+        padding: clamp(14px, 3.8vw, 18px);
+      }
+
+      .visual-detail-inner {
+        gap: 14px;
+      }
+
+      .addon-card {
+        min-height: 58px;
+      }
+
+      .actions {
+        gap: 14px;
+      }
+
+      .estimate-shell {
+        display: none;
+      }
+
+      .mobile-drawer {
+        position: fixed;
+        left: 12px;
+        right: 12px;
+        bottom: 12px;
+        z-index: 20;
+        display: block;
+        border: 1px solid rgba(255, 255, 255, 0.75);
+        border-radius: 24px;
+        background: #18181b;
+        backdrop-filter: blur(34px);
+        -webkit-backdrop-filter: blur(34px);
+        box-shadow: 0 14px 45px rgba(24, 24, 27, 0.12);
+        overflow: hidden;
+        color: #fff;
+      }
+
+      .mobile-drawer.is-open {
+        background: rgba(255, 255, 255, 0.78);
+        color: var(--ink);
+      }
+
+      .mobile-summary {
+        width: 100%;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto auto;
+        align-items: center;
+        gap: 10px;
+        padding: 14px 16px;
+      }
+
+      .mobile-summary-toggle {
+        min-width: 0;
+        border: 0;
+        background: transparent;
+        color: inherit;
+        text-align: left;
+        cursor: pointer;
+        padding: 0;
+      }
+
+      .mobile-summary span {
+        display: block;
+        color: rgba(255, 255, 255, 0.68);
+        font-size: 11px;
+      }
+
+      .mobile-drawer.is-open .mobile-summary span {
+        color: var(--muted);
+      }
+
+      .mobile-summary strong {
+        font-family: "Instrument Sans", sans-serif;
+        font-size: 20px;
+        line-height: 1;
+        font-weight: 600;
+        color: #fff;
+      }
+
+      .mobile-drawer.is-open .mobile-summary strong {
+        color: var(--ink);
+      }
+
+      .mobile-quick-consult {
+        border-radius: 999px;
+        background: #fff;
+        color: var(--black);
+        padding: 8px 12px;
+        font-family: "Instrument Sans", sans-serif;
+        font-size: 12px;
+        line-height: 1;
+        font-weight: 600;
+        text-decoration: none;
+        white-space: nowrap;
+      }
+
+      .drawer-chevron {
+        width: 24px;
+        height: 24px;
+        border: 0;
+        border-radius: 999px;
+        background: var(--black);
+        color: #fff;
+        display: grid;
+        place-items: center;
+        font-size: 14px;
+        line-height: 1;
+        cursor: pointer;
+        transition: transform 220ms ease;
+      }
+
+      .mobile-drawer.is-open .drawer-chevron {
+        transform: rotate(180deg);
+      }
+
+      .mobile-details {
+        display: grid;
+        grid-template-rows: 0fr;
+        transition: grid-template-rows 280ms ease;
+      }
+
+      .mobile-drawer.is-open .mobile-details {
+        grid-template-rows: 1fr;
+      }
+
+      .mobile-details-inner {
+        min-height: 0;
+        overflow: hidden;
+        padding: 0 16px;
+      }
+
+      .mobile-drawer.is-open .mobile-details-inner {
+        padding-bottom: 16px;
+      }
+
+      .mobile-drawer .metrics {
+        gap: 10px;
+      }
+
+      .mobile-drawer .metric {
+        padding-top: 10px;
+      }
+
+      .mobile-drawer .consult {
+        width: 100%;
+        margin-top: 14px;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .budget-page {
+        padding: 18px 16px;
+      }
+
+      h1 {
+        font-size: 34px;
+      }
+
+      .choice-grid.mobile-two {
+        grid-template-columns: 1fr;
+      }
+
+      .actions {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="budget-page">
+    <section class="question-panel" aria-label="Configurador de presupuesto">
+      <header class="intro">
+        <svg class="logo" xmlns="http://www.w3.org/2000/svg" width="25" height="30" viewBox="0 0 25 30" fill="none" aria-hidden="true">
+          <path d="M24.9998 30L24.9998 25C19.477 25 14.9998 20.5228 14.9998 15C14.9998 9.47714 19.477 5 24.9998 5V0C16.7155 0 9.99983 6.71573 9.99983 15C9.99983 23.2843 16.7155 30 24.9998 30Z" fill="#262626"/>
+          <path d="M0 0L0.00000123185 5C5.52282 5 9.99983 9.47716 9.99983 15C9.99983 20.5229 5.52282 25 0.00000425192 25L0.0000045301 30C8.28429 30 14.9998 23.2843 14.9998 15C14.9998 6.71573 8.28429 0 0 0Z" fill="#262626"/>
+        </svg>
+        <div class="intro-copy">
+          <h1>Estima el costo de tu web.</h1>
+          <p>Primero entendamos qué necesita tu proyecto: estructura, contenido, diseño y nivel de detalle.</p>
+        </div>
+      </header>
+
+      <div class="progress" aria-live="polite">
+        <span id="stepCounter">1 / 4</span>
+        <div class="progress-track" aria-hidden="true">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+      </div>
+
+      <form class="steps" id="budgetForm">
+        <section class="step is-active" data-step="0">
+          <div class="step-heading">
+            <h2>Tamaño del Sitio</h2>
+            <p class="step-lead">Selecciona cuál será la estructura y tamaño de tu web.</p>
+          </div>
+
+          <div class="choice-grid">
+            <label class="option">
+              <input type="radio" name="structure" value="one" checked>
+              <span class="option-card">
+                <strong>Una página continua</strong>
+                <span class="choice-copy">Todo el recorrido en una sola experiencia. (Onepage)</span>
+                <span class="checkmark">✓</span>
+              </span>
+            </label>
+            <label class="option">
+              <input type="radio" name="structure" value="multi">
+              <span class="option-card">
+                <strong>Páginas separadas</strong>
+                <span class="choice-copy">Cuando conviene dividir la información por temas. (Multipage)</span>
+                <span class="checkmark">✓</span>
+              </span>
+            </label>
+          </div>
+
+          <div class="slider-block">
+            <p class="block-title" id="extensionTitle">Extensión de tu web:</p>
+            <div class="range-wrap">
+              <input id="sizeRange" type="range" min="0" max="3" step="1" value="0" aria-label="Extensión de tu web">
+              <div class="range-labels" id="rangeLabels"></div>
+            </div>
+            <p class="hint" id="sizeHint">Cada bloque representa una parte de la web: inicio, servicios, beneficios, testimonios, preguntas o contacto.</p>
+          </div>
+        </section>
+
+        <section class="step" data-step="1">
+          <div class="step-heading">
+            <h2>Diseño de la web</h2>
+            <p class="step-lead">Elige el nivel visual que necesita el proyecto.</p>
+          </div>
+
+          <div class="choice-grid">
+            <label class="option">
+              <input type="radio" name="visualMode" value="guided" checked>
+              <span class="option-card">
+                <strong>Diseño base adaptado</strong>
+                <span class="choice-copy">Una estructura cuidada, ajustada a tu contenido y marca.</span>
+                <span class="checkmark">✓</span>
+              </span>
+            </label>
+            <label class="option">
+              <input type="radio" name="visualMode" value="own">
+              <span class="option-card">
+                <strong>Diseño personalizado</strong>
+                <span class="choice-copy">Más decisiones visuales, composición y detalles pensados para tu marca.</span>
+                <span class="checkmark">✓</span>
+              </span>
+            </label>
+          </div>
+
+          <div class="visual-detail" id="visualDetail">
+            <div class="visual-detail-inner">
+              <p class="block-title">Elige el nivel visual que necesita el proyecto:</p>
+              <label class="radio-option">
+                <input type="radio" name="visualEffort" value="brand" checked>
+                <span><strong>Estética de marca</strong><small>Colores, composición y detalles gráficos más alineados a tu identidad visual.</small></span>
+              </label>
+              <label class="radio-option">
+                <input type="radio" name="visualEffort" value="motion">
+                <span><strong>Animaciones adicionales</strong><small>Transiciones, apariciones y microinteracciones al navegar o hacer scroll.</small></span>
+              </label>
+              <label class="radio-option">
+                <input type="radio" name="visualEffort" value="signature">
+                <span><strong>3D o interacción especial</strong><small>Una pieza más trabajada, como objeto 3D ligero, hero interactivo o efecto puntual.</small></span>
+              </label>
+            </div>
+          </div>
+        </section>
+
+        <section class="step" data-step="2">
+          <div class="step-heading">
+            <h2>Material disponible</h2>
+            <p class="step-lead">Textos, imágenes y estructura con los que ya cuentas para empezar.</p>
+          </div>
+
+          <div class="choice-grid one-col">
+            <label class="option">
+              <input type="radio" name="content" value="ready" checked>
+              <span class="option-card">
+                <strong>Contenido listo</strong>
+                <span class="choice-copy">Textos e imágenes definidos para avanzar sin ordenar información.</span>
+                <span class="checkmark">✓</span>
+              </span>
+            </label>
+            <label class="option">
+              <input type="radio" name="content" value="organize">
+              <span class="option-card">
+                <strong>Por ordenar</strong>
+                <span class="choice-copy">Hay material, pero necesita estructura, síntesis y optimización.</span>
+                <span class="checkmark">✓</span>
+              </span>
+            </label>
+            <label class="option">
+              <input type="radio" name="content" value="base">
+              <span class="option-card">
+                <strong>Idea base</strong>
+                <span class="choice-copy">Solo hay información general, todavía sin estructura.</span>
+                <span class="checkmark">✓</span>
+              </span>
+            </label>
+          </div>
+        </section>
+
+        <section class="step" data-step="3">
+          <div class="step-heading">
+            <h2>Adicionales</h2>
+            <p class="step-lead">Agrega piezas extra si tu proyecto las necesita.</p>
+          </div>
+
+          <div class="addons" id="addons"></div>
+        </section>
+      </form>
+
+      <div class="divider"></div>
+
+      <nav class="actions" aria-label="Navegación del cotizador">
+        <button class="button" id="prevStep" type="button">Anterior</button>
+        <button class="button primary" id="nextStep" type="button">Siguiente</button>
+      </nav>
+    </section>
+
+    <aside class="estimate-shell" aria-label="Resumen del presupuesto">
+      <div class="estimate-card">
+        <div class="estimate-top">
+          <div class="estimate-label">Inversión estimada</div>
+          <div class="amount" id="amount">S/680–S/850</div>
+          <p class="estimate-copy" id="read">Una web clara para presentar tu proyecto y empezar online.</p>
+        </div>
+        <div class="metrics" id="metrics"></div>
+        <p class="note"><strong>El precio se mantiene según lo seleccionado</strong> y solo varía ante requerimientos adicionales. No se implementan tiendas online, reservas, login ni sistemas a medida.<br><br><strong>Dominio y hosting no están incluidos</strong>; puedo orientarte para adquirirlos o conectarlos.</p>
+      </div>
+      <a class="button primary consult" id="consultLink" href="#" target="_blank" rel="noopener">Consultar con este estimado (S/680–S/850)</a>
+    </aside>
+  </main>
+
+  <aside class="mobile-drawer" id="mobileDrawer" aria-label="Resumen móvil">
+    <div class="mobile-summary">
+      <button class="mobile-summary-toggle" id="drawerToggle" type="button" aria-expanded="false">
+        <span><span>Inversión estimada</span><strong id="mobileAmount">S/680–S/850</strong></span>
+      </button>
+      <a class="mobile-quick-consult" id="mobileQuickConsultLink" href="#" target="_blank" rel="noopener">Consultar</a>
+      <button class="drawer-chevron" id="drawerChevron" type="button" aria-label="Ver detalle del estimado">⌃</button>
+    </div>
+    <div class="mobile-details">
+      <div class="mobile-details-inner">
+        <div class="metrics" id="mobileMetrics"></div>
+        <a class="button primary consult" id="mobileConsultLink" href="#" target="_blank" rel="noopener">Consultar con este estimado</a>
+      </div>
+    </div>
+  </aside>
+
+  <script>
+    const sizeSteps = [
+      {
+        key: "focused",
+        label: "Breve",
+        oneRange: "4–5 bloques",
+        multiRange: "2–3 páginas",
+        descriptionOne: "Un recorrido directo para presentar lo esencial.",
+        descriptionMulti: "Un sitio breve, dividido solo en las páginas necesarias.",
+        sections: 5,
+        pages: 3,
+        oneCost: 0,
+        multiCost: 370,
+        onePadding: 170,
+        multiPadding: 280
+      },
+      {
+        key: "balanced",
+        label: "Equilibrada",
+        oneRange: "6–8 bloques",
+        multiRange: "4–5 páginas",
+        descriptionOne: "Más espacio para explicar servicios, beneficios o proceso.",
+        descriptionMulti: "Más estructura para separar servicios, información y contacto.",
+        sections: 8,
+        pages: 5,
+        oneCost: 140,
+        multiCost: 930,
+        onePadding: 300,
+        multiPadding: 430
+      },
+      {
+        key: "complete",
+        label: "Completa",
+        oneRange: "9–11 bloques",
+        multiRange: "6–8 páginas",
+        descriptionOne: "Un recorrido más amplio, con más argumentos y detalle.",
+        descriptionMulti: "Un sitio más amplio, con varias páginas y mejor recorrido.",
+        sections: 11,
+        pages: 8,
+        oneCost: 400,
+        multiCost: 1680,
+        onePadding: 620,
+        multiPadding: 620
+      },
+      {
+        key: "extended",
+        label: "Extendida",
+        oneRange: "12–14 bloques",
+        multiRange: "9–10 páginas",
+        descriptionOne: "Para proyectos con más información y más capas de contenido.",
+        descriptionMulti: "Para proyectos con más páginas, contenido y navegación.",
+        sections: 14,
+        pages: 10,
+        oneCost: 770,
+        multiCost: 2220,
+        onePadding: 480,
+        multiPadding: 760
+      }
+    ];
+
+    const addonsData = [
+      { label: "WhatsApp o llamada", title: "WhatsApp o llamada", copy: "Una vía directa para que te contacten.", cost: 0, included: true, checked: true },
+      { label: "Formulario básico", title: "Formulario básico", copy: "Consulta directa con campos esenciales.", cost: 0, included: true, checked: true },
+      { label: "Redes sociales", title: "Enlaces a Redes sociales", copy: "Botones de Facebook, Instagram, etc.", cost: 0, included: true, checked: true },
+      { label: "Mapa si aplica", title: "Mapa si aplica", copy: "Para negocios con atención física.", cost: 0, included: true, checked: true },
+      { label: "Logo de inicio", title: "Diseño de Logo", copy: "Una marca visual funcional para usar en la web.", cost: 180 },
+      { label: "Formulario extendido", title: "Formulario extendido", copy: "Más campos, pasos o preguntas específicas.", cost: 220 },
+      { label: "Galería o portafolio", title: "Galería o portafolio", copy: "Imágenes, proyectos, espacios o trabajos.", cost: 260 },
+      { label: "Casos o testimonios", title: "Casos o testimonios", copy: "Resultados, trabajos destacados o social proof.", cost: 320 },
+      { label: "Animaciones adicionales", title: "Animaciones adicionales", copy: "Transiciones, apariciones o efectos al navegar.", cost: 360 },
+      { label: "Video de presentación", title: "Video de presentación", copy: "Video breve para presentar la marca. 40s–3min.", cost: 400, variableHigh: 600, price: "desde S/400" },
+      { label: "Segundo idioma", title: "Segundo idioma", copy: "Una versión adicional para llegar a más clientes.", cost: 0, relative: "language", price: "variable" }
+    ];
+
+    const form = document.getElementById("budgetForm");
+    const steps = [...document.querySelectorAll(".step")];
+    const stepCounter = document.getElementById("stepCounter");
+    const progressFill = document.getElementById("progressFill");
+    const prevStep = document.getElementById("prevStep");
+    const nextStep = document.getElementById("nextStep");
+    const amount = document.getElementById("amount");
+    const mobileAmount = document.getElementById("mobileAmount");
+    const read = document.getElementById("read");
+    const metrics = document.getElementById("metrics");
+    const mobileMetrics = document.getElementById("mobileMetrics");
+    const range = document.getElementById("sizeRange");
+    const rangeLabels = document.getElementById("rangeLabels");
+    const sizeHint = document.getElementById("sizeHint");
+    const extensionTitle = document.getElementById("extensionTitle");
+    const visualDetail = document.getElementById("visualDetail");
+    const addons = document.getElementById("addons");
+    const consultLink = document.getElementById("consultLink");
+    const mobileConsultLink = document.getElementById("mobileConsultLink");
+    const mobileQuickConsultLink = document.getElementById("mobileQuickConsultLink");
+    const mobileDrawer = document.getElementById("mobileDrawer");
+    const drawerToggle = document.getElementById("drawerToggle");
+    const drawerChevron = document.getElementById("drawerChevron");
+    let currentStep = 0;
+
+    function money(value) {
+      return `S/${value}`;
+    }
+
+    function selected(name) {
+      return form.querySelector(`[name="${name}"]:checked`);
+    }
+
+    function selectedExtras() {
+      return [...form.querySelectorAll(".addon input:checked")];
+    }
+
+    function createAddons() {
+      addons.innerHTML = addonsData.map((item, index) => {
+        const badge = item.included ? "Incluido" : item.price || `+ S/${item.cost}`;
+        return `
+          <label class="addon ${item.included ? "is-included" : "is-paid"}">
+            <input type="checkbox"
+              data-label="${item.label}"
+              data-cost="${item.cost}"
+              ${item.variableHigh ? `data-variable-high="${item.variableHigh}"` : ""}
+              ${item.relative ? `data-relative="${item.relative}"` : ""}
+              ${item.included ? `data-included="true"` : ""}
+              ${item.checked ? "checked" : ""}>
+            <span class="addon-card">
+              <em class="addon-badge">${badge}</em>
+              <strong class="addon-title">${item.title}</strong>
+              <span class="addon-copy">${item.copy}</span>
+              <span class="checkmark">✓</span>
+            </span>
+          </label>
+        `;
+      }).join("");
+    }
+
+    function updateStep() {
+      steps.forEach((step, index) => step.classList.toggle("is-active", index === currentStep));
+      stepCounter.textContent = `${currentStep + 1} / 4`;
+      progressFill.style.width = `${((currentStep + 1) / 4) * 100}%`;
+      prevStep.disabled = currentStep === 0;
+      nextStep.textContent = currentStep === steps.length - 1 ? "Consultar" : "Siguiente";
+    }
+
+    function updateRangeLabels(structure) {
+      const index = Number(range.value);
+      range.style.setProperty("--range", `${(index / 3) * 100}%`);
+      rangeLabels.innerHTML = sizeSteps.map((step, i) => {
+        const rangeText = structure === "multi" ? step.multiRange : step.oneRange;
+        if (i === index) {
+          return `<span><strong>${step.label}</strong><small>${rangeText}</small></span>`;
+        }
+        return `<span>${step.label}</span>`;
+      }).join("");
+      extensionTitle.textContent = structure === "multi" ? "Extensión de tu sitio:" : "Extensión de tu web:";
+      sizeHint.textContent = structure === "multi"
+        ? "Cada página representa una pantalla interna del sitio: inicio, servicios, nosotros, contacto u otras vistas."
+        : "Cada bloque representa una parte de la web: inicio, servicios, beneficios, testimonios, preguntas o contacto.";
+    }
+
+    function calculate() {
+      const structure = selected("structure").value;
+      const visualMode = selected("visualMode").value;
+      const content = selected("content").value;
+      const extras = selectedExtras();
+      const sizeIndex = Number(range.value);
+      const sizeData = sizeSteps[sizeIndex];
+
+      visualDetail.classList.toggle("is-open", visualMode === "own");
+      updateRangeLabels(structure);
+
+      let total = 680;
+      let rangePadding = 170;
+      let pageCount = 1;
+      let structureLabel = "Una página";
+      let sizeLabel = "";
+      let sectionCount = sizeData.sections;
+
+      if (structure === "one") {
+        structureLabel = "Una página";
+        sizeLabel = `${sizeData.label} · ${sizeData.oneRange}`;
+        total += sizeData.oneCost;
+        rangePadding = sizeData.onePadding;
+      } else {
+        pageCount = sizeData.pages;
+        structureLabel = "Páginas separadas";
+        sizeLabel = `${sizeData.label} · ${sizeData.multiRange}`;
+        sectionCount = Math.min(10, 4 + Math.ceil(pageCount / 2));
+        total += sizeData.multiCost;
+        rangePadding = sizeData.multiPadding;
+      }
+
+      let visualLabel = "Base adaptada";
+      if (visualMode === "own") {
+        const effort = selected("visualEffort").value;
+        if (effort === "brand") {
+          total += structure === "multi" ? 320 + pageCount * 35 : 300;
+          visualLabel = "Personalizado · marca";
+        }
+        if (effort === "motion") {
+          total += structure === "multi" ? 520 + pageCount * 55 : 480;
+          visualLabel = "Personalizado · animaciones";
+        }
+        if (effort === "signature") {
+          total += structure === "multi" ? 820 + pageCount * 85 : 780;
+          visualLabel = "Personalizado · interacción especial";
+        }
+      }
+
+      let contentLabel = "Contenido listo";
+      const contentEffort = structure === "multi"
+        ? 0.9 + (pageCount * 0.22)
+        : 1 + Math.max(0, sectionCount - 5) * 0.07;
+
+      if (content === "organize") {
+        total += Math.round((130 * contentEffort) / 10) * 10;
+        contentLabel = "Contenido por ordenar";
+      }
+      if (content === "base") {
+        total += Math.round((200 * contentEffort) / 10) * 10;
+        contentLabel = "Idea base";
+      }
+
+      const languageExtra = extras.find(item => item.dataset.relative === "language");
+      const fixedExtras = extras.filter(item => item.dataset.relative !== "language");
+      const paidExtras = fixedExtras.filter(item => item.dataset.included !== "true");
+      const variableHighExtra = paidExtras.reduce((sum, item) => sum + Number(item.dataset.variableHigh || 0), 0);
+      total += paidExtras.reduce((sum, item) => sum + Number(item.dataset.cost), 0);
+
+      if (languageExtra) {
+        if (structure === "multi") {
+          total += 160 + pageCount * 70;
+        } else {
+          total += 160 + Math.max(0, sectionCount - 5) * 24;
+        }
+      }
+
+      const low = Math.round(total / 10) * 10;
+
+      if (structure === "multi") {
+        const baseOverlapPadding = [600, 780, 620, rangePadding];
+        let overlapPadding = baseOverlapPadding[sizeIndex] || rangePadding;
+
+        if (sizeIndex < 3) {
+          const nextPageDiff = [2, 3, 2][sizeIndex];
+
+          if (visualMode === "own") {
+            const visualEffort = selected("visualEffort").value;
+            if (visualEffort === "brand") overlapPadding += nextPageDiff * 35;
+            if (visualEffort === "motion") overlapPadding += nextPageDiff * 55;
+            if (visualEffort === "signature") overlapPadding += nextPageDiff * 85;
+          }
+
+          if (content === "organize") {
+            overlapPadding += Math.round((130 * nextPageDiff * 0.22) / 10) * 10;
+          }
+
+          if (content === "base") {
+            overlapPadding += Math.round((200 * nextPageDiff * 0.22) / 10) * 10;
+          }
+
+          if (languageExtra) {
+            overlapPadding += nextPageDiff * 70;
+          }
+
+          overlapPadding += 40;
+        }
+
+        rangePadding = Math.max(rangePadding, overlapPadding);
+      }
+
+      const high = Math.round((low + rangePadding + variableHighExtra) / 10) * 10;
+      const rangeText = `${money(low)}–${money(high)}`;
+
+      let estimatedDays = 0;
+
+      if (structure === "one") {
+        const onePageDays = [6, 9, 13, 18];
+        estimatedDays = onePageDays[sizeIndex];
+      } else {
+        const multiDays = [8, 15, 27, 38];
+        estimatedDays = multiDays[sizeIndex];
+      }
+
+      if (visualMode === "own") {
+        const visualEffort = selected("visualEffort").value;
+        if (visualEffort === "brand") estimatedDays += structure === "multi" ? 2.5 + pageCount * 0.25 : 2.5;
+        if (visualEffort === "motion") estimatedDays += structure === "multi" ? 4 + pageCount * 0.4 : 4;
+        if (visualEffort === "signature") estimatedDays += structure === "multi" ? 7 + pageCount * 0.6 : 7;
+      }
+
+      if (content === "organize") {
+        estimatedDays += structure === "multi"
+          ? 1.5 + (pageCount * 0.45)
+          : 1.7 + (sizeIndex * 1.2);
+      }
+
+      if (content === "base") {
+        estimatedDays += structure === "multi"
+          ? 3 + (pageCount * 0.7)
+          : 3.5 + (sizeIndex * 1.9);
+      }
+
+      paidExtras.forEach(item => {
+        const label = item.dataset.label || "";
+        if (label.includes("Video")) estimatedDays += 4.5;
+        else if (label.includes("Animaciones")) estimatedDays += 2.5;
+        else if (label.includes("Galería") || label.includes("Casos")) estimatedDays += 1.8;
+        else estimatedDays += 1.2;
+      });
+
+      if (languageExtra) {
+        estimatedDays += structure === "multi"
+          ? 2.5 + (pageCount * 0.45)
+          : 1.8 + (sizeIndex * 1.2);
+      }
+
+      let projectLevel = "Enfocado";
+      let time = "5–8 días";
+      let reading = "Una web clara para presentar tu proyecto y empezar online.";
+
+      if (estimatedDays > 8) time = "7–10 días";
+      if (estimatedDays > 11) time = "8–12 días";
+
+      if (estimatedDays > 15) {
+        projectLevel = "Más desarrollado";
+        time = "2–3 semanas";
+        reading = "Una web con más contenido, más estructura o una dirección visual más marcada.";
+      }
+
+      if (estimatedDays > 22) {
+        projectLevel = "Más desarrollado";
+        time = "3–4 semanas";
+        reading = "Una web con más contenido, más estructura o una dirección visual más marcada.";
+      }
+
+      if (estimatedDays > 30) {
+        projectLevel = "Más completo";
+        time = "4–5 semanas";
+        reading = "Una web con más piezas, más detalle y una estructura más amplia.";
+      }
+
+      if (estimatedDays > 37) {
+        projectLevel = "Más completo";
+        time = "5–7 semanas";
+        reading = "Una web con más piezas, más detalle y una estructura más amplia.";
+      }
+
+      if (estimatedDays > 42) {
+        projectLevel = "Más completo";
+        time = "6–8 semanas";
+        reading = "Una web con más piezas, más detalle y una estructura más amplia.";
+      }
+
+      if (estimatedDays > 50) {
+        projectLevel = "Proyecto amplio";
+        time = "7–9 semanas";
+        reading = "Un proyecto amplio, con varias páginas, mayor revisión de contenido y más trabajo visual.";
+      }
+
+      if (estimatedDays > 62) {
+        projectLevel = "Proyecto amplio";
+        time = "8–10 semanas";
+        reading = "Un proyecto amplio, con varias páginas, mayor revisión de contenido y más trabajo visual.";
+      }
+
+      if (estimatedDays > 76) {
+        projectLevel = "Proyecto extendido";
+        time = "10–12 semanas";
+        reading = "Un desarrollo más grande, pensado para varias páginas, contenido amplio y piezas especiales.";
+      }
+
+      const extrasLabel = paidExtras.length || languageExtra
+        ? extras.filter(item => item.dataset.included !== "true").map(item => item.dataset.label).join(", ")
+        : "Sin adicionales de pago";
+
+      const metricHTML = `
+        <div class="metric"><span>Estructura</span><strong>${structureLabel}</strong></div>
+        <div class="metric"><span>Extensión</span><strong>${sizeLabel}</strong></div>
+        <div class="metric"><span>Diseño</span><strong>${visualLabel}</strong></div>
+        <div class="metric"><span>Material</span><strong>${contentLabel}</strong></div>
+        <div class="metric"><span>Adicionales</span><strong>${extrasLabel}</strong></div>
+        <div class="metric"><span>Nivel de proyecto</span><strong>${projectLevel}</strong></div>
+        <div class="metric"><span>Tiempo estimado</span><strong>${time}</strong></div>
+      `;
+
+      amount.textContent = rangeText;
+      mobileAmount.textContent = rangeText;
+      read.textContent = reading;
+      metrics.innerHTML = metricHTML;
+      mobileMetrics.innerHTML = metricHTML;
+
+      const message = encodeURIComponent(`Hola Diego, quiero consultar este estimado para mi web: ${rangeText}.`);
+      const href = `https://wa.me/51941037709?text=${message}`;
+      consultLink.href = href;
+      mobileConsultLink.href = href;
+      mobileQuickConsultLink.href = href;
+      consultLink.textContent = `Consultar con este estimado (${rangeText})`;
+      mobileConsultLink.textContent = `Consultar con este estimado (${rangeText})`;
+    }
+
+    createAddons();
+    updateStep();
+    calculate();
+
+    form.addEventListener("input", calculate);
+    range.addEventListener("input", calculate);
+
+    prevStep.addEventListener("click", () => {
+      currentStep = Math.max(0, currentStep - 1);
+      updateStep();
+    });
+
+    nextStep.addEventListener("click", () => {
+      if (currentStep === steps.length - 1) {
+        consultLink.click();
+        return;
+      }
+      currentStep = Math.min(steps.length - 1, currentStep + 1);
+      updateStep();
+    });
+
+    function toggleDrawer() {
+      const isOpen = mobileDrawer.classList.toggle("is-open");
+      drawerToggle.setAttribute("aria-expanded", String(isOpen));
+    }
+
+    drawerToggle.addEventListener("click", toggleDrawer);
+    drawerChevron.addEventListener("click", toggleDrawer);
+  </script>
+</body>
+</html>
